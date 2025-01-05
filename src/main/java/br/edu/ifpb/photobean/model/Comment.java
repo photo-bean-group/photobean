@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +22,7 @@ public class Comment {
     @JoinColumn(name = "photo_id")
     private Photo photo;
 
-
     @ManyToOne
     @JoinColumn(name = "photographer_id")
     private Photographer photographer;
-
-
 }
