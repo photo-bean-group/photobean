@@ -25,19 +25,9 @@ public class Photographer {
     @OneToMany(mappedBy = "photographer") // Um fotografo pode ter várias fotos associadas
     private Set<Photo> photos;
 
-
-
     @OneToMany(mappedBy = "follower")   //  Um fotógrafo pode seguir vários outros fotógrafos.
     private Set<Follow> following;
 
     @OneToMany(mappedBy = "followee")   //   Um fotógrafo pode ser seguido por vários outros fotógrafos.
     private Set<Follow> followers;
-
-
-
-
 }
-
-
-
-

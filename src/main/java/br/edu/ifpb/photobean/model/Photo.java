@@ -9,7 +9,6 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-
 public class Photo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +35,4 @@ public class Photo {
     //  private Set<Tag> tags;
     @OneToMany(mappedBy = "photo") // uma foto pode ter várias tags através de PhotoTag
     private Set<PhotoTag> photoTags;
-
-
 }

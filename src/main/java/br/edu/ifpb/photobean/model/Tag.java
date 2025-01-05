@@ -11,6 +11,7 @@ import java.util.Set;
 @Setter
 @Table(name = "tag")
 public class Tag {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,4 +24,3 @@ public class Tag {
     @OneToMany(mappedBy = "tag") // uma tag pode estar em várias fotos através de PhotoTag
     private Set<PhotoTag> photoTags;
 }
-
