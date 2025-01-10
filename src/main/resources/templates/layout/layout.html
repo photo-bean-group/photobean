@@ -12,11 +12,12 @@
 
 <div th:replace="~{/fragments/base :: navmenu}" />
 
-<div class="container">
-    <div th:text="${mensagem}" th:if="${mensagem ne null}" class="alert alert-success"></div>
 
-    <div class="card">
-        <div class="card-header">
+<div class="container d-flex justify-content-center align-items-center">
+    <div th:text="${mensagem}" th:if="${mensagem ne null}" class="alert alert-success w-100"></div>
+
+    <div class="card border-success" style="width: 40rem;">
+        <div class="card-header text-center">
             <span th:text="${titulo}">Título do card</span>
         </div>
         <div class="card-body">

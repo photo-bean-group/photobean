@@ -1,15 +1,18 @@
 package br.edu.ifpb.photobean.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.io.Serializable;
 import java.util.Set;
 
+@Data
 @Entity
-@Getter
-@Setter
-public class Photo {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Photo implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,4 +38,8 @@ public class Photo {
     //  private Set<Tag> tags;
     @OneToMany(mappedBy = "photo") // uma foto pode ter várias tags através de PhotoTag
     private Set<PhotoTag> photoTags;
+
+    public Photo(Photographer photographer) {
+        this.photographer = photographer;
+    }
 }
