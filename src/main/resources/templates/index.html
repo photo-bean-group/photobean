@@ -16,6 +16,9 @@
     <div>Como fotógrafo, você poderá:</div>
     <ul>
         <li>Publicar fotografias</li>
+        <form method="GET" th:action="@{photos/form}">
+            <button class="btn btn-primary" type="submit">Nova</button>
+        </form>
         <li>Seguir outros fotográfos</li>
         <li>Curtir fotografias</li>
         <li>Enviar comentários</li>
