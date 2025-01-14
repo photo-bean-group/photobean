@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}" th:with="titulo='Cadastro de Usuario'" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<body>
+<h1>Cadastro de Fotógrafo</h1>
+
+<!-- Exibe mensagens de sucesso ou erro -->
+<div th:if="${mensagemSucesso}" style="color: green;">
+    <p th:text="${mensagemSucesso}"></p>
+</div>
+<div th:if="${mensagemErro}" style="color: red;">
+    <p th:text="${mensagemErro}"></p>
+</div>
+
+<div layout:fragment="content">
+<!-- Formulário para o cadastro -->
+<form th:action="@{/Cadastro/Criar}" method="POST" th:object="${photographer}">
+    <!-- Nome -->
+    <label for="name">Nome:</label>
+    <input type="text" id="name" name="name" th:field="*{name}" required>
+    <br>
+
+    <!-- Email -->
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" th:field="*{email}" required>
+    <br>
+
+    <button type="submit">Cadastrar</button>
+</form>
+</div>
+</body>
+</html>
