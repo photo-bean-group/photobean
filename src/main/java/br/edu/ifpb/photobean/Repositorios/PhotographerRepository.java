@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface Repository_Photographer extends JpaRepository<Photographer, Long> {
+public interface PhotographerRepository extends JpaRepository<Photographer, Integer> {
     Optional<Photographer> findByEmail(String email);
 }
