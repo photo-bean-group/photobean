@@ -12,7 +12,7 @@ public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne //Um registro de "seguir" está vinculado ao fotógrafo que está seguindo.
     @JoinColumn(name = "follower_id")

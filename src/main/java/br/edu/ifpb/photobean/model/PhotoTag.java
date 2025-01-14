@@ -12,7 +12,7 @@ public class PhotoTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne  // uma tag de foto esta associada a uma photo especifica.
     @JoinColumn(name = "photo_id", nullable = false)

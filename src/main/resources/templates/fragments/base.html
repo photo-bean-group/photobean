@@ -21,10 +21,12 @@
     <nav class="navbar navbar-expand navbar-light bg-light d-flex justify-content-between mb-3">
         <div class="navbar-nav">
             <a class="nav-item nav-link" th:href="@{/home}">Home</a>
-            <a class="nav-item nav-link">
-                Minha conta
+            <a class="nav-item nav-link" th:href="@{/home}">Feed</a>
+
+            <a class="nav-item nav-link" th:href="@{/photographers/form}">
+                Novo Fotográfo
             </a>
-            <a class="nav-item nav-link" th:href="@{/Cadastro/form}">Cadastrar</a>
+            <a class="nav-item nav-link" th:href="@{/photos/form}">Nova Foto</a>
         </div>
         <form class="form-inline m-2 my-2 my-lg-0 " method="POST">
             <span style="margin-right: 3px; font-size: 0.8em;"></span>
