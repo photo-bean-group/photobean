@@ -17,9 +17,10 @@ public class Photo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String  imageUrl;
+    private String imageUrl;
 
     @Lob
+    @Column(name="imagemData", nullable=false, columnDefinition="blob")
     private byte[] imagemData;
 
     // @ManyToOne // um para muitos
