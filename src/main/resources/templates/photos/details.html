@@ -21,12 +21,12 @@
                 </h6>
                 <ul class="list-unstyled">
                     <li th:each="comment : ${photo.comments}">
-                        <strong th:text="${comment.user}"></strong>:
-                        <span th:text="${comment.text}"></span>
+                        <strong th:text="${comment.photographer.name}"></strong>:
+                        <span th:text="${comment.commentText}"></span>
                     </li>
                 </ul>
             </div>
-            <div class="mt-auto ">
+            <div class="mt-auto">
                 <hr>
                 <form method="post" th:action="@{/photos/{photoId}/comments(photoId=${photo.id})}">
                     <div class="input-group">
@@ -36,8 +36,16 @@
                 </form>
                 <hr>
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-heart me-2" style="font-size: 1.5rem;"></i>
-                    <span>0 curtidas</span>
+                    <form method="post" th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}">
+                        <input type="hidden" name="photographerId" th:value="${loggedPhotographerId}">
+                        <button class="btn" th:classappend="${isLiked ? 'btn-outline-danger' : 'btn-outline-success'}" type="submit">
+                            <i class="bi" th:classappend="${isLiked ? 'bi-heart-fill' : 'bi-heart'}"></i>
+                            <span th:text="${isLiked ? 'Descurtir' : 'Curtir'}"></span>
+                        </button>
+                    </form>
+                    <span class="ms-3">
+                        <strong>Curtidas:</strong> <span th:text="${photo.likes.size()}"></span>
+                    </span>
                 </div>
             </div>
         </div>

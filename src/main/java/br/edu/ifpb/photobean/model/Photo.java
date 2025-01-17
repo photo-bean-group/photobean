@@ -23,22 +23,23 @@ public class Photo implements Serializable {
     @Column(name="imagemData", columnDefinition="blob")
     private byte[] imagemData;
 
-    // @ManyToOne // um para muitos
-    // @JoinColumn(name = "photographer_id", nullable = false)
-    // private Photographer photographer; //  instanciar
-
-    @ManyToOne  //uma foto esta associada a um fotografo
+    @ManyToOne  //uma foto está associada a um fotógrafo
     @JoinColumn(name = "photographer_id")// chave estrangeira na tabela
     private Photographer photographer;
 
-
-    @OneToMany(mappedBy = "photo")// uma foto tem varios comentarios
+    @OneToMany(mappedBy = "photo")// uma foto tem vários comentários
     private Set<Comment> comments;
 
-    //  @OneToMany(mappedBy = "photo")// uma foto tem varias tags
-    //  private Set<Tag> tags;
     @OneToMany(mappedBy = "photo") // uma foto pode ter várias tags através de PhotoTag
     private Set<PhotoTag> photoTags;
+
+    @ManyToMany // Relacionamento muitos-para-muitos para curtidas
+    @JoinTable(
+            name = "photo_likes",
+            joinColumns = @JoinColumn(name = "photo_id"),
+            inverseJoinColumns = @JoinColumn(name = "photographer_id")
+    )
+    private Set<Photographer> likes;
 
     public Photo(Photographer photographer) {
         this.photographer = photographer;

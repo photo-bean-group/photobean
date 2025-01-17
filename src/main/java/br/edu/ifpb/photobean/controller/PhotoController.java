@@ -7,10 +7,7 @@ import br.edu.ifpb.photobean.service.PhotographerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -58,4 +55,34 @@ public class PhotoController {
         return mav;
 
     }
+
+    @PostMapping("/{photoId}/like")
+    public ModelAndView likePhoto(@PathVariable Integer photoId,
+                                  @RequestParam Integer photographerId,
+                                  ModelAndView mav) {
+        try {
+            photographerService.likePhoto(photoId, photographerId);
+            mav.setViewName("redirect:/photos/" + photoId);
+        } catch (Exception e) {
+            mav.addObject("error", "Erro ao curtir a foto: " + e.getMessage());
+            mav.setViewName("error");
+        }
+        return mav;
+    }
+
+    @PostMapping("/{photoId}/unlike")
+    public ModelAndView unlikePhoto(@PathVariable Integer photoId,
+                                    @RequestParam Integer photographerId,
+                                    ModelAndView mav) {
+        try {
+            photographerService.unlikePhoto(photoId, photographerId);
+            mav.setViewName("redirect:/photos/" + photoId);
+        } catch (Exception e) {
+            mav.addObject("error", "Erro ao descurtir a foto: " + e.getMessage());
+            mav.setViewName("error");
+        }
+        return mav;
+    }
+
+
 }
