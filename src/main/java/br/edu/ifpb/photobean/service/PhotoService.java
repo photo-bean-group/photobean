@@ -21,7 +21,7 @@ public class PhotoService {
 
     private final String uploadDir = "src/main/resources/static/uploads/photos";
 
-    public Photo upload(Photo photo, String fileName, byte[] bytes) throws IOException, IOException {
+    public Photo upload(Photo photo, String fileName, byte[] bytes) throws IOException {
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -33,12 +33,11 @@ public class PhotoService {
         }
 
         photo.setImageUrl("/uploads/photos/" + fileName);
-
         return photoRepo.save(photo);
     }
 
     public Photo save(Photo photo) {
         return photoRepo.save(photo);
     }
-
 }
+
