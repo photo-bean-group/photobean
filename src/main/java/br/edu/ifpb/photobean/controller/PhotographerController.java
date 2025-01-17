@@ -5,6 +5,7 @@ import br.edu.ifpb.photobean.service.PhotographerService;
 import br.edu.ifpb.photobean.model.Photographer;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,12 +41,20 @@ public class PhotographerController {
 
         return modelAndView;
     }
+    @GetMapping("{id}/photos/{photoId}")
+    public ModelAndView showPhotoDetails(@PathVariable Integer id, @PathVariable Integer photoId,
+                                         ModelAndView modelAndView) {
+        Photographer photographer = photographerService.findById(id);
+        Photo photo = photographer.getPhotos().stream()
+                .filter(p -> p.getId().equals(photoId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Foto não encontrada"));
 
-//    @GetMapping("{id}/details/")
-//    public ModelAndView photographerDetails(@PathVariable("id") Integer idPhotographer, ModelAndView model) {
-//        Photographer photographer = photographerService.findByIdWithPhotos(idPhotographer);
-//
-//    }
+        modelAndView.setViewName("photos/details");
+        modelAndView.addObject("photo", photo);
+        modelAndView.addObject("photographer", photographer);
+        return modelAndView;
+    }
 
     @GetMapping("/Criado")
     public String MostrarCadastroForms(Model model) {

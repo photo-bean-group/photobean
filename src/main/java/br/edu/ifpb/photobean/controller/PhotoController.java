@@ -47,11 +47,8 @@ public class PhotoController {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             Photo photo = photoService.upload(p, fileName, file.getBytes());
             Integer photographerId = photo.getPhotographer().getId();
-            photo.setImageUrl(this.buildUrl(photographerId, photo.getId()));
-            photoService.save(photo);
-            System.out.println(this.buildUrl(photographerId, photo.getId()));
             message = "Foto carregada com sucesso: " + file.getOriginalFilename();
-            nextPage = String.format("redirect:/photographers/%s/photos", photographerId.toString());
+            nextPage = String.format("redirect:/photographers/%s/photos/%s", photographerId.toString(), photo.getId());
         } catch (Exception e) {
             message = "Não foi possível carregar o documento: " + file.getOriginalFilename() + "! " + e.getMessage();
             nextPage = "/photos/form";
@@ -60,16 +57,5 @@ public class PhotoController {
         mav.setViewName(nextPage);
         return mav;
 
-    }
-
-    private String buildUrl(Integer photographerId, Integer photoId) {
-        String fileDownloadUri = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/photographers/")
-                .path(String.valueOf(photographerId))
-                .path("/photos/")
-                .path(String.valueOf(photoId))
-                .toUriString();
-        return fileDownloadUri;
     }
 }

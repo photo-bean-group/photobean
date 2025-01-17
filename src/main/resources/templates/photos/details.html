@@ -1,0 +1,49 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:insert="~{layout/layout}" th:with="titulo='Detalhes da Foto'">
+
+<body>
+<div layout:fragment="content" class="container mt-4">
+    <div class="row">
+        <div class="col-md-7">
+            <img th:src="@{${photo.imageUrl}}" alt="Foto" class="img-fluid rounded" style="max-height: 500px; width: 100%;">
+        </div>
+        <div class="col-md-5 d-flex flex-column justify-content-between">
+            <div class="">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-person-circle me-2" style="font-size: 2rem;"></i>
+                    <div>
+                        <h5 class="mb-0" th:text="${photographer.name}"></h5>
+                        <small class="text-muted" th:text="${photographer.email}"></small>
+                    </div>
+                </div>
+                <hr>
+                <h6>
+                    Comentários <span th:text="'- ' + ${photo.comments.size()}"></span>
+                </h6>
+                <ul class="list-unstyled">
+                    <li th:each="comment : ${photo.comments}">
+                        <strong th:text="${comment.user}"></strong>:
+                        <span th:text="${comment.text}"></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="mt-auto ">
+                <hr>
+                <form method="post" th:action="@{/photos/{photoId}/comments(photoId=${photo.id})}">
+                    <div class="input-group">
+                        <input type="text" name="comment" class="form-control" placeholder="Adicione um comentário..." required>
+                        <button class="btn btn-success" type="submit">Enviar</button>
+                    </div>
+                </form>
+                <hr>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-heart me-2" style="font-size: 1.5rem;"></i>
+                    <span>0 curtidas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+</html>

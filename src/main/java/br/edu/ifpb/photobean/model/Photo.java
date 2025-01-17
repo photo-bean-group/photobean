@@ -20,7 +20,7 @@ public class Photo implements Serializable {
     private String imageUrl;
 
     @Lob
-    @Column(name="imagemData", nullable=false, columnDefinition="blob")
+    @Column(name="imagemData", columnDefinition="blob")
     private byte[] imagemData;
 
     // @ManyToOne // um para muitos
