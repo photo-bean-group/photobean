@@ -1,6 +1,6 @@
 package br.edu.ifpb.photobean.service;
 
-import br.edu.ifpb.photobean.Repositorios.PhotographerRepository;
+import br.edu.ifpb.photobean.repository.PhotographerRepository;
 import br.edu.ifpb.photobean.model.Photographer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

@@ -1,4 +1,4 @@
-package br.edu.ifpb.photobean.Repositorios;
+package br.edu.ifpb.photobean.repository;
 
 import br.edu.ifpb.photobean.model.Photographer;
 import org.springframework.data.jpa.repository.JpaRepository;
