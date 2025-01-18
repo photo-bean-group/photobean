@@ -41,6 +41,21 @@ public class PhotographerController {
 
         return modelAndView;
     }
+
+    @GetMapping("/{id}/photos")
+    public ModelAndView getPhotographers(@PathVariable Integer id, ModelAndView modelAndView) {
+        Photographer photographer = photographerService.findById(id);
+
+        if (photographer == null) {
+            throw new IllegalArgumentException("Fotografo não econtrado com o ID" + id);
+        }
+
+        modelAndView.setViewName("photographers/details");
+        modelAndView.addObject("photographer", photographer);
+        modelAndView.addObject("photo");
+        return modelAndView;
+    }
+
     @GetMapping("{id}/photos/{photoId}")
     public ModelAndView showPhotoDetails(@PathVariable Integer id, @PathVariable Integer photoId,
                                          ModelAndView modelAndView) {
