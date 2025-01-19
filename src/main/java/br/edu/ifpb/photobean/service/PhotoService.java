@@ -1,7 +1,6 @@
 package br.edu.ifpb.photobean.service;
 
 import br.edu.ifpb.photobean.model.Photo;
-import br.edu.ifpb.photobean.model.Photographer;
 import br.edu.ifpb.photobean.repository.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +33,11 @@ public class PhotoService {
 
         photo.setImageUrl("/uploads/photos/" + fileName);
         return photoRepo.save(photo);
+    }
+
+    public Photo findById(Integer photoId) {
+        return photoRepo.findById(photoId)
+                .orElseThrow(() -> new IllegalArgumentException("Photo not found with ID: " + photoId));
     }
 
     public Photo save(Photo photo) {
