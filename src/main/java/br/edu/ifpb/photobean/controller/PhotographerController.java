@@ -1,6 +1,9 @@
 package br.edu.ifpb.photobean.controller;
 
+import br.edu.ifpb.photobean.model.Comment;
 import br.edu.ifpb.photobean.model.Photo;
+import br.edu.ifpb.photobean.service.CommentService;
+import br.edu.ifpb.photobean.service.PhotoService;
 import br.edu.ifpb.photobean.service.PhotographerService;
 import br.edu.ifpb.photobean.model.Photographer;
 import jakarta.validation.Valid;
@@ -13,12 +16,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+
 @Controller
 @RequestMapping("/photographers")
 public class PhotographerController {
 
     @Autowired
     private PhotographerService photographerService;
+
+    @Autowired
+    private PhotoService photoService;
+
+    @Autowired
+    private CommentService commentService;
 
     @RequestMapping("/form")
     public ModelAndView getForm(ModelAndView modelAndView) {
@@ -69,6 +80,28 @@ public class PhotographerController {
         modelAndView.addObject("photo", photo);
         modelAndView.addObject("photographer", photographer);
         return modelAndView;
+    }
+
+    @PostMapping("{id}/photos/{photoId}/comments")
+    public String addComment(@PathVariable Integer id, @PathVariable Integer photoId,
+                             @RequestParam String comment) {
+
+        Photographer photographer = photographerService.findById(id);
+        Photo photo = photoService.findById(photoId);
+
+
+        // Cria e configura o comentário
+        Comment comments = new Comment();
+        comments.setPhoto(photo);
+        comments.setPhotographer(photographer);
+        comments.setCommentText(comment);
+        comments.setCreateAt(LocalDateTime.now());
+
+        // Salva o comentário
+        commentService.addComment(comments);
+
+        // Redireciona para a página de detalhes da foto
+        return "redirect:/photographers/" + id + "/photos/" + photoId;
     }
 
     @GetMapping("/Criado")
