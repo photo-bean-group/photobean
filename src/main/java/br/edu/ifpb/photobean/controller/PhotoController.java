@@ -42,7 +42,7 @@ public class PhotoController {
         String nextPage = "";
         try {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            Photo photo = photoService.upload(p, fileName, file.getBytes());
+            Photo photo = photoService.save(p, fileName, file.getBytes());
             Integer photographerId = photo.getPhotographer().getId();
             message = "Foto carregada com sucesso: " + file.getOriginalFilename();
             nextPage = String.format("redirect:/photographers/%s/photos/%s", photographerId.toString(), photo.getId());
@@ -61,7 +61,7 @@ public class PhotoController {
                                   @RequestParam Integer photographerId,
                                   ModelAndView mav) {
         try {
-            photographerService.likePhoto(photoId, photographerId);
+            //photographerService.likePhoto(photoId, photographerId);
             mav.setViewName("redirect:/photos/" + photoId);
         } catch (Exception e) {
             mav.addObject("error", "Erro ao curtir a foto: " + e.getMessage());
@@ -75,7 +75,7 @@ public class PhotoController {
                                     @RequestParam Integer photographerId,
                                     ModelAndView mav) {
         try {
-            photographerService.unlikePhoto(photoId, photographerId);
+            //photographerService.unlikePhoto(photoId, photographerId);
             mav.setViewName("redirect:/photos/" + photoId);
         } catch (Exception e) {
             mav.addObject("error", "Erro ao descurtir a foto: " + e.getMessage());
