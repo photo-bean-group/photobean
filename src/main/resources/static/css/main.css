@@ -3,3 +3,8 @@
     vertical-align: sub;
     margin-right: 5px;
 }
+
+.no-decoration {
+    text-decoration: None;
+    color: black;
+}

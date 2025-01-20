@@ -14,8 +14,6 @@
 
 
 <div class="container d-flex justify-content-center align-items-center">
-    <div th:text="${mensagem}" th:if="${mensagem ne null}" class="alert alert-success w-100"></div>
-
     <div class="card border-success mb-3" style="width: 60rem;">
         <div class="card-header text-center">
             <span th:text="${titulo}">Título do card</span>
@@ -27,6 +25,7 @@
             </div>
 
         </div>
+        <div th:text="${message}" th:if="${message ne null}" class="alert alert-success w-90 m-2"></div>
     </div>
 </div>
 </body>
