@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:insert="~{layout/layout}" th:with="titulo='Detalhes da Foto'">
+<head>
+    <title>Lista de Fotógrafos</title>
+</head>
+<body>
+<div layout:fragment="content" class="container mt-5">
+    <h1>Lista de Fotógrafos</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="photographer : ${photographer}">
+            <td th:text="${photographer.name}"></td>
+            <td th:text="${photographer.email}"></td>
+            <td>
+                <a th:href="@{/photographers/{id}/photos (id=${photographer.id})}" class="btn btn-sm btn-primary">Detalhes</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
