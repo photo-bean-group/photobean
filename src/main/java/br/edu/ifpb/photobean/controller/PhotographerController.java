@@ -149,6 +149,14 @@ public class PhotographerController {
         return "redirect:/photographers/" + id + "/photos/" + photoId;
     }
 
+    @GetMapping("/list")
+    public String PhotographerList(Model model) {
+        List<Photographer> photographerlist = photographerService.findAll();
+        photographerlist.sort(Comparator.comparing(Photographer::getName));
+        model.addAttribute("photographer", photographerlist);
+        return "photographers/list";
+    }
+
     @GetMapping("/Criado")
     public String MostrarCadastroForms(Model model) {
         if(!model.containsAttribute("photographer")){
