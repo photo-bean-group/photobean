@@ -1,14 +1,13 @@
 package br.edu.ifpb.photobean.controller;
 
-import br.edu.ifpb.photobean.model.Comment;
 import br.edu.ifpb.photobean.model.Photo;
 import br.edu.ifpb.photobean.service.CommentService;
+import br.edu.ifpb.photobean.service.FollowService;
 import br.edu.ifpb.photobean.service.PhotoService;
 import br.edu.ifpb.photobean.service.PhotographerService;
 import br.edu.ifpb.photobean.model.Photographer;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/photographers")
@@ -24,6 +25,9 @@ public class PhotographerController {
 
     @Autowired
     private PhotographerService photographerService;
+
+    @Autowired
+    private FollowService followService;
 
     @Autowired
     private PhotoService photoService;
@@ -39,7 +43,7 @@ public class PhotographerController {
     }
 
     @PostMapping
-    public ModelAndView SavePhotographer(@Valid Photographer photographer, ModelAndView modelAndView,
+    public ModelAndView savePhotographer(@Valid Photographer photographer, ModelAndView modelAndView,
                                          BindingResult validation, RedirectAttributes attr) {
         if (validation.hasErrors()) {
             modelAndView.setViewName("contas/form");
@@ -47,30 +51,73 @@ public class PhotographerController {
         }
         String operation = (photographer.getId() == null) ? "criado" : "salvo";
         photographerService.save(photographer);
-        modelAndView.setViewName("redirect:photographers");
-        attr.addFlashAttribute("mensagem", "Fotógrafo " + operation + " com sucesso!");
+        modelAndView.setViewName("redirect:/photos/form");
+        attr.addFlashAttribute("message", "Fotógrafo " + operation + " com sucesso!");
 
         return modelAndView;
     }
 
     @GetMapping("/{id}/photos")
-    public ModelAndView getPhotographers(@PathVariable Integer id, ModelAndView modelAndView) {
+    public ModelAndView getPhotographer(@PathVariable Integer id, ModelAndView modelAndView) {
+        Photographer loggedPhotographer = photographerService.findById(1);
         Photographer photographer = photographerService.findById(id);
 
         if (photographer == null) {
-            throw new IllegalArgumentException("Fotografo não econtrado com o ID" + id);
+            throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
         }
+
+        List<Photo> photos = photographer.getPhotos().stream()
+                .sorted(Comparator.comparing(Photo::getId).reversed())
+                .collect(Collectors.toList());
+
+        boolean isFollowing = followService.findByFollowerAndFollowee(loggedPhotographer, photographer) != null;
+        long followersCount = followService.countByFollowee(photographer);
+        long followingCount = followService.countByFollower(photographer);
 
         modelAndView.setViewName("photographers/details");
         modelAndView.addObject("photographer", photographer);
-        modelAndView.addObject("photo");
+        modelAndView.addObject("photos", photos);
+        modelAndView.addObject("isFollowing", isFollowing);
+        modelAndView.addObject("followersCount", followersCount);
+        modelAndView.addObject("followingCount", followingCount);
         return modelAndView;
+    }
+
+    @PostMapping("{id}/follow")
+    public String followPhotographer(@PathVariable Integer id) {
+        Photographer photographerFollower = photographerService.findById(1);
+        Photographer photographerFollowee = photographerService.findById(id);
+
+        if (photographerFollowee == null) {
+            throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
+        }
+
+        followService.save(photographerFollower, photographerFollowee);
+        return "redirect:/photographers/" + id + "/photos";
+    }
+
+    @PostMapping("{id}/unfollow")
+    public String unfollowPhotographer(@PathVariable Integer id) {
+        Photographer photographerFollower = photographerService.findById(1);
+        Photographer photographerFollowee = photographerService.findById(id);
+
+        if (photographerFollowee == null) {
+            throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
+        }
+
+        followService.delete(photographerFollower, photographerFollowee);
+        return "redirect:/photographers/" + id + "/photos";
     }
 
     @GetMapping("{id}/photos/{photoId}")
     public ModelAndView showPhotoDetails(@PathVariable Integer id, @PathVariable Integer photoId,
                                          ModelAndView modelAndView) {
         Photographer photographer = photographerService.findById(id);
+
+        if (photographer == null) {
+            throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
+        }
+
         Photo photo = photographer.getPhotos().stream()
                 .filter(p -> p.getId().equals(photoId))
                 .findFirst()
@@ -85,22 +132,20 @@ public class PhotographerController {
     @PostMapping("{id}/photos/{photoId}/comments")
     public String addComment(@PathVariable Integer id, @PathVariable Integer photoId,
                              @RequestParam String comment) {
-
         Photographer photographer = photographerService.findById(id);
+
+        if (photographer == null) {
+            throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
+        }
+
         Photo photo = photoService.findById(photoId);
 
+        if (photo == null) {
+            throw new IllegalArgumentException("Foto não econtrado com o ID" + photoId);
+        }
 
-        // Cria e configura o comentário
-        Comment comments = new Comment();
-        comments.setPhoto(photo);
-        comments.setPhotographer(photographer);
-        comments.setCommentText(comment);
-        comments.setCreateAt(LocalDateTime.now());
+        commentService.saveComment(comment, photo, photographer);
 
-        // Salva o comentário
-        commentService.addComment(comments);
-
-        // Redireciona para a página de detalhes da foto
         return "redirect:/photographers/" + id + "/photos/" + photoId;
     }
 
@@ -109,11 +154,11 @@ public class PhotographerController {
         if(!model.containsAttribute("photographer")){
             model.addAttribute("photographer", new Photographer());
         }
-        return "cadastro/form"; //Nome do template para o formulário
+        return "cadastro/form";
     }
 
     @GetMapping("/sucesso")
     public String showSuccessPage() {
-        return "sucesso"; // Nome do template para a página de sucesso
+        return "sucesso";
     }
 }

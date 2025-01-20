@@ -8,27 +8,30 @@
         </div>
         <div class="col-md-5 d-flex flex-column justify-content-between">
             <div class="">
-                <div class="d-flex align-items-center mb-3">
-                    <i class="bi bi-person-circle me-2" style="font-size: 2rem;"></i>
-                    <div>
-                        <h5 class="mb-0" th:text="${photographer.name}"></h5>
-                        <small class="text-muted" th:text="${photographer.email}"></small>
+                <a class="no-decoration" th:href="@{/photographers/{photographerId}/photos (photographerId=${photographer.id})}">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-person-circle me-2" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5 class="mb-0" th:text="${photographer.name}"></h5>
+                        </div>
                     </div>
-                </div>
+                </a>
                 <hr>
                 <h6>
                     Comentários <span th:text="'- ' + ${photo.comments.size()}"></span>
                 </h6>
                 <ul class="list-unstyled">
                     <li th:each="comment : ${photo.comments}">
-                        <strong th:text="${comment.photographer.name}"></strong>:
+                        <a class="no-decoration" th:href="@{/photographers/{photographerId}/photos (photographerId=${photographer.id})}">
+                            <strong th:text="${comment.photographer.name}"></strong>:
+                        </a>
                         <span th:text="${comment.commentText}"></span>
                     </li>
                 </ul>
             </div>
             <div class="mt-auto">
                 <hr>
-                <form method="post" th:action="@{/photographers/{id}/photos/{photoId}/comments(id=${photographer.id}, photoId=${photo.id})}">
+                <form method="post" th:action="@{/photographers/{id}/photos/{photoId}/comments (id=${photographer.id}, photoId=${photo.id})}">
                     <div class="input-group">
                         <input type="text" name="comment" class="form-control" placeholder="Adicione um comentário..." required>
                         <button class="btn btn-success" type="submit">Enviar</button>
