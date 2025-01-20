@@ -38,16 +38,10 @@ public class PhotographerService implements Service<Photographer, Integer> {
 
     @Override
     public Photographer save(Photographer photographer) {
-        return photographerRepository.save(photographer);
-    }
-
-    public Photographer savePhotographer(Photographer photographer) {
-        // Verifica se o email já está em uso
         Optional<Photographer> existingPhotographer = photographerRepository.findByEmail(photographer.getEmail());
         if (existingPhotographer.isPresent()) {
             throw new IllegalArgumentException("Email já cadastrado!");
         }
-        // Salva o fotógrafo no banco
         return photographerRepository.save(photographer);
     }
 }

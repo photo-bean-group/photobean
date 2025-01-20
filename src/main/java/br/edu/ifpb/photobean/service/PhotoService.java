@@ -20,7 +20,7 @@ public class PhotoService {
 
     private final String uploadDir = "src/main/resources/static/uploads/photos";
 
-    public Photo upload(Photo photo, String fileName, byte[] bytes) throws IOException {
+    public Photo save(Photo photo, String fileName, byte[] bytes) throws IOException {
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -38,10 +38,6 @@ public class PhotoService {
     public Photo findById(Integer photoId) {
         return photoRepo.findById(photoId)
                 .orElseThrow(() -> new IllegalArgumentException("Photo not found with ID: " + photoId));
-    }
-
-    public Photo save(Photo photo) {
-        return photoRepo.save(photo);
     }
 }
 
