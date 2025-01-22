@@ -138,7 +138,8 @@ public class PhotographerController {
     @PostMapping("{id}/photos/{photoId}/comments")
     public String addComment(@PathVariable Integer id, @PathVariable Integer photoId,
                              @RequestParam String comment) {
-        Photographer photographer = photographerService.findById(id);
+        //Para fins de apresentação ta usando o id:1 como o fotografo comentando.
+        Photographer photographer = photographerService.findById(1);
 
         if (photographer == null) {
             throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
