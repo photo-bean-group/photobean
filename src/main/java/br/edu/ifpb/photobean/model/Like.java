@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @IdClass(LikeId.class)
+@Table(name = "photo_likes") // Evitando conflito com palavra reservada
 public class Like {
 
     @Id
@@ -19,6 +20,5 @@ public class Like {
     @ManyToOne
     @JoinColumn(name = "photographer_id", nullable = false)
     private Photographer photographer;
-
-    // Outros métodos e lógica, se necessário
 }
+

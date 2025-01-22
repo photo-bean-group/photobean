@@ -15,6 +15,11 @@ public class LikeController {
     @PostMapping("/{photoId}/like-toggle")
     public String toggleLike(@PathVariable Integer photoId, @RequestParam Integer photographerId) {
         likeService.toggleLike(photoId, photographerId);
-        return "redirect:/photos/" + photoId;
+        return "redirect:/photographers/" + photographerId + "/photos/" + photoId;
     }
+
+
+
+
 }
+
