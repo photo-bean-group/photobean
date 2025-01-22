@@ -29,7 +29,6 @@ public class PhotoService {
             throw new IllegalStateException("Operação não permitida: o fotógrafo está suspenso.");
         }
 
-        // Garante que o diretório de upload existe
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
