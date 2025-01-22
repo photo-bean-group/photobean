@@ -1,5 +1,6 @@
 package br.edu.ifpb.photobean.service;
 
+import br.edu.ifpb.photobean.DTO.PhotoFeedDTO;
 import br.edu.ifpb.photobean.model.Photo;
 import br.edu.ifpb.photobean.repository.PhotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PhotoService {
@@ -39,5 +42,18 @@ public class PhotoService {
         return photoRepo.findById(photoId)
                 .orElseThrow(() -> new IllegalArgumentException("Photo not found with ID: " + photoId));
     }
+
+    public List<PhotoFeedDTO> getPhotoFeed() {       // Caio - Utilizado para pegar a photo
+        List<Photo> photos = photoRepo.findAll();
+        return photos.stream()
+                .map(photo -> new PhotoFeedDTO(
+                        photo.getId(),
+                        photo.getImageUrl(),
+                        photo.getPhotographer().getName(),
+                        photo.getPhotographer().getEmail()
+                ))
+                .collect(Collectors.toList());
+    }
+
 }
 

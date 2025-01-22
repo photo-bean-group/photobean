@@ -50,9 +50,15 @@ public class PhotographerController {
             return modelAndView;
         }
         String operation = (photographer.getId() == null) ? "criado" : "salvo";
+
         photographerService.save(photographer);
         modelAndView.setViewName("redirect:/photos/form");
+
+
         attr.addFlashAttribute("message", "Fotógrafo " + operation + " com sucesso!");
+
+        // Adiciona o fotógrafo recém-cadastrado como atributo
+
 
         return modelAndView;
     }
@@ -157,6 +163,18 @@ public class PhotographerController {
         return "photographers/list";
     }
 
+
+
+    @GetMapping("/feed")
+    public String PhotographerListFeed(Model model) {
+        List<Photographer> photographerlist = photographerService.findAll();
+        model.addAttribute("photographers", photographerlist);
+        return "photographers/feed";
+    }
+
+
+
+
     @GetMapping("/Criado")
     public String MostrarCadastroForms(Model model) {
         if(!model.containsAttribute("photographer")){
@@ -169,4 +187,9 @@ public class PhotographerController {
     public String showSuccessPage() {
         return "sucesso";
     }
+
+
+
+
+
 }

@@ -9,4 +9,8 @@ import java.util.Optional;
 @Repository
 public interface PhotographerRepository extends JpaRepository<Photographer, Integer> {
     Optional<Photographer> findByEmail(String email);
+
+    Photographer findFirstByOrderByIdDesc();
+
+
 }

@@ -36,6 +36,10 @@ public class PhotographerService implements Service<Photographer, Integer> {
         return photographer;
     }
 
+    public Photographer findMostRecentPhotographer() {
+        return photographerRepository.findFirstByOrderByIdDesc();
+    }
+
     @Override
     public Photographer save(Photographer photographer) {
         Optional<Photographer> existingPhotographer = photographerRepository.findByEmail(photographer.getEmail());
