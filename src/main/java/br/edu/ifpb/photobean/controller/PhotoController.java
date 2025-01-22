@@ -1,11 +1,13 @@
 package br.edu.ifpb.photobean.controller;
 
+import br.edu.ifpb.photobean.DTO.PhotoFeedDTO;
 import br.edu.ifpb.photobean.model.Photo;
 import br.edu.ifpb.photobean.model.Photographer;
 import br.edu.ifpb.photobean.service.PhotoService;
 import br.edu.ifpb.photobean.service.PhotographerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,6 +85,7 @@ public class PhotoController {
         }
         return mav;
     }
+
 
 
 }
