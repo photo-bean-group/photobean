@@ -16,7 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -167,8 +169,25 @@ public class PhotographerController {
 
     @GetMapping("/feed")
     public String PhotographerListFeed(Model model) {
-        List<Photographer> photographerlist = photographerService.findAll();
-        model.addAttribute("photographers", photographerlist);
+        List<Photographer> photographerList = photographerService.findAll();
+
+        // Ordenando as fotos de cada fotógrafo
+        for (Photographer photographer : photographerList) {
+            // Convertendo o Set de fotos para List e ordenando
+            List<Photo> sortedPhotos = photographer.getPhotos().stream()
+                    .sorted(Comparator.comparing(Photo::getId).reversed())
+                    .collect(Collectors.toList());
+
+            // Convertendo de volta para Set (não mantém a ordem)
+            Set<Photo> sortedPhotoSet = new HashSet<>(sortedPhotos);
+
+            // Atualizando o Set de fotos com as fotos ordenadas
+            photographer.setPhotos(sortedPhotoSet);
+        }
+        // Adicionando a lista de fotógrafos no modelo
+        model.addAttribute("photographers", photographerList);
+
+        // Retorna a página "feed" com os fotógrafos e suas fotos ordenadas
         return "photographers/feed";
     }
 
