@@ -39,22 +39,25 @@
                 </form>
                 <hr>
                 <div class="d-flex align-items-center">
-                    <form method="post" th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}">
-                        <input type="hidden" name="photographerId" th:value="${loggedPhotographerId}">
-                      <!--   <button class="btn" th:classappend="${isLiked ? 'btn-outline-danger' : 'btn-outline-success'}" type="submit">
-                             <i class="bi" th:classappend="${isLiked ? 'bi-heart-fill' : 'bi-heart'}"></i>
-                             <span th:text="${isLiked ? 'Descurtir' : 'Curtir'}"></span>
-                         </button>-->
-                     </form>
-                     <span class="ms-3">
-                         <strong>Curtidas:</strong> <span th:text="${photo.likes.size()}"></span>
-                     </span>
-                 </div>
-             </div>
-         </div>
-     </div>
- </div>
- </div>
- </body>
+                    <form th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}" method="post">
+                        <input type="hidden" name="photographerId" th:value="${photographer.id}">
+                        <button type="submit" class="btn"
+                                th:text="${photo.likes.contains(photographer) ? 'Descurtir' : 'Curtir'}"
+                                th:classappend="${photo.likes.contains(photographer) ? 'btn-danger' : 'btn-primary'}">
+                        </button>
+                    </form>
 
- </html>
+                    <span class="ms-3">
+        <strong>Curtidas:</strong> <span th:text="${photo.likes.size()}"></span>
+    </span>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+</html>

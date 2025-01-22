@@ -8,6 +8,7 @@ import br.edu.ifpb.photobean.repository.PhotoRepository;
 import br.edu.ifpb.photobean.repository.PhotographerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LikeService {
@@ -21,6 +22,7 @@ public class LikeService {
     @Autowired
     private PhotographerRepository photographerRepository;
 
+    @Transactional // Adicionando transação aqui
     public void toggleLike(Integer photoId, Integer photographerId) {
         boolean alreadyLiked = likeRepository.existsByPhotoIdAndPhotographerId(photoId, photographerId);
 
