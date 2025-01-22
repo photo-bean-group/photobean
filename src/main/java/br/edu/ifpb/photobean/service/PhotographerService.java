@@ -48,4 +48,30 @@ public class PhotographerService implements Service<Photographer, Integer> {
         }
         return photographerRepository.save(photographer);
     }
+
+    public Photographer suspendPhotographer(Integer id) {
+        Photographer photographer = findById(id);
+        if (photographer == null) {
+            throw new IllegalArgumentException("Fotógrafo não encontrado com o ID: " + id);
+        }
+        if (photographer.isSuspended()) {
+            throw new IllegalStateException("Fotógrafo já está suspenso.");
+        }
+        photographer.setSuspended(true);
+        return photographerRepository.save(photographer);
+    }
+
+    public Photographer reactivatePhotographer(Integer id) {
+        Photographer photographer = findById(id);
+        if (photographer == null) {
+            throw new IllegalArgumentException("Fotógrafo não encontrado com o ID: " + id);
+        }
+        if (!photographer.isSuspended()) {
+            throw new IllegalStateException("Fotógrafo já está ativo.");
+        }
+        photographer.setSuspended(false);
+        return photographerRepository.save(photographer);
+    }
+
+
 }

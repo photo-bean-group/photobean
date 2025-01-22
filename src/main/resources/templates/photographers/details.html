@@ -13,14 +13,14 @@
                 <div class="d-flex">
                     <h2 class="mb-1" th:text="${photographer.name}"></h2>
 
-                    <form th:action="@{/photographers/{id}/follow (id=${photographer.id})}" th:if="${!isFollowing}"
-                          method="post" class="d-inline m-2">
+                    <form th:if="!${photographer.suspended}" th:action="@{/photographers/{id}/follow (id=${photographer.id})}" method="post" class="d-inline m-2">
                         <button type="submit" class="btn btn-success btn-sm">Seguir</button>
                     </form>
-                    <form th:action="@{/photographers/{id}/unfollow (id=${photographer.id})}" th:if="${isFollowing}"
-                          method="post" class="d-inline m-2">
+                    <form th:if="!${photographer.suspended}" th:action="@{/photographers/{id}/unfollow (id=${photographer.id})}" method="post" class="d-inline m-2">
                         <button type="submit" class="btn btn-secondary btn-sm">Deixar de Seguir</button>
                     </form>
+                    <p th:if="${photographer.suspended}" class="text-danger">Este fotógrafo está suspenso.</p>
+
                 </div>
                 <p class="text-muted mb-1" th:text="${photographer.email}"></p>
             </div>

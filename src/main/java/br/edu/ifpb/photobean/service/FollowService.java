@@ -24,6 +24,10 @@ public class FollowService {
     }
 
     public Follow save(Photographer follower, Photographer followee) {
+        if (follower.isSuspended()) {
+            throw new IllegalStateException("Operação não permitida: fotógrafo suspenso.");
+        }
+
         Follow follow = followRepository.findByFollowerAndFollowee(follower, followee);
         if (follow != null) {
             throw new IllegalArgumentException("Já está seguindo esse fotógrafo");
@@ -35,6 +39,7 @@ public class FollowService {
             return followRepository.save(follow);
         }
     }
+
 
     public void delete(Photographer follower, Photographer followee) {
         Follow follow = followRepository.findByFollowerAndFollowee(follower, followee);
