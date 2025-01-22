@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:insert="~{layout/layout}" th:with="titulo='Detalhes da Foto'">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:insert="~{layout/layout}" th:with="titulo='Lista de Fotógrafos'">
 <head>
     <title>Lista de Fotógrafos</title>
 </head>
@@ -11,18 +11,33 @@
         <tr>
             <th>Nome</th>
             <th>Email</th>
+            <th>Status</th>
             <th>Ações</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="photographer : ${photographer}">
-            <td th:text="${photographer.name}"></td>
-            <td th:text="${photographer.email}"></td>
+            <td th:text="${photographer.name}">Nome</td>
+            <td th:text="${photographer.email}">Email</td>
+            <td th:text="${photographer.suspended ? 'Suspenso' : 'Ativo'}">Status</td>
             <td>
+                <!-- Link para detalhes -->
                 <a th:href="@{/photographers/{id}/photos (id=${photographer.id})}" class="btn btn-sm btn-primary">Detalhes</a>
+
+                <!-- Botão para suspender -->
+                <form th:action="@{/photographers/{id}/suspend (id=${photographer.id})}" method="post" class="d-inline" th:if="${!photographer.suspended}">
+                    <button type="submit" class="btn btn-sm btn-danger">Suspender</button>
+                </form>
+
+                <!-- Botão para reativar -->
+                <form th:action="@{/photographers/{id}/reactivate (id=${photographer.id})}" method="post" class="d-inline" th:if="${photographer.suspended}">
+                    <button type="submit" class="btn btn-sm btn-success">Reativar</button>
+                </form>
             </td>
         </tr>
         </tbody>
+
+
     </table>
 </div>
 </body>

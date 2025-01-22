@@ -22,8 +22,15 @@ public class LikeService {
     @Autowired
     private PhotographerRepository photographerRepository;
 
-    @Transactional // Adicionando transação aqui
+    @Transactional
     public void toggleLike(Integer photoId, Integer photographerId) {
+        Photographer photographer = photographerRepository.findById(photographerId)
+                .orElseThrow(() -> new RuntimeException("Fotógrafo não encontrado"));
+
+        if (photographer.isSuspended()) {
+            throw new IllegalStateException("Operação não permitida: fotógrafo suspenso.");
+        }
+
         boolean alreadyLiked = likeRepository.existsByPhotoIdAndPhotographerId(photoId, photographerId);
 
         if (alreadyLiked) {
@@ -31,8 +38,6 @@ public class LikeService {
         } else {
             Photo photo = photoRepository.findById(photoId)
                     .orElseThrow(() -> new RuntimeException("Foto não encontrada"));
-            Photographer photographer = photographerRepository.findById(photographerId)
-                    .orElseThrow(() -> new RuntimeException("Fotógrafo não encontrado"));
 
             Like like = new Like();
             like.setPhoto(photo);
@@ -40,6 +45,7 @@ public class LikeService {
             likeRepository.save(like);
         }
     }
+
 
     public boolean isPhotoLikedByPhotographer(Integer photoId, Integer photographerId) {
         return likeRepository.existsByPhotoIdAndPhotographerId(photoId, photographerId);

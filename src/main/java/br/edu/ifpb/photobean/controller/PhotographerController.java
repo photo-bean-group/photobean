@@ -188,6 +188,31 @@ public class PhotographerController {
         return "sucesso";
     }
 
+    @PostMapping("/{id}/suspend")
+    public String suspendPhotographer(@PathVariable Integer id, RedirectAttributes attributes) {
+        try {
+            photographerService.suspendPhotographer(id);
+            attributes.addFlashAttribute("message", "Fotógrafo suspenso com sucesso!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            attributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/photographers/list";
+    }
+
+    @PostMapping("/{id}/reactivate")
+    public String reactivatePhotographer(@PathVariable Integer id, RedirectAttributes attributes) {
+        try {
+            photographerService.reactivatePhotographer(id);
+            attributes.addFlashAttribute("message", "Fotógrafo reativado com sucesso!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            attributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/photographers/list";
+    }
+
+
+
+
 
 
 

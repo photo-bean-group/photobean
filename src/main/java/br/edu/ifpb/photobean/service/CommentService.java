@@ -25,6 +25,10 @@ public class CommentService {
     }
 
     public Comment saveComment(String commentText, Photo photo, Photographer photographer) {
+        if (photographer.isSuspended()) {
+            throw new IllegalStateException("Operação não permitida: fotógrafo suspenso.");
+        }
+
         Comment comment = new Comment();
         comment.setPhoto(photo);
         comment.setPhotographer(photographer);
@@ -32,4 +36,5 @@ public class CommentService {
         comment.setCreateAt(LocalDateTime.now());
         return commentRepository.save(comment);
     }
+
 }

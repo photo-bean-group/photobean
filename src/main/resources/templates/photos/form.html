@@ -13,10 +13,15 @@
     <div class="form-group mx-sm-3 mb-2">
       <label for="photographer">Fotógrafo</label>
       <select class="form-select mb-2" th:field="*{photographer.id}">
-        <option th:each="ph : ${photographerItems}" th:text="${ph.name}" th:value="${ph.id}" />
+        <option th:each="ph : ${photographerItems}"
+                th:value="${ph.id}"
+                th:text="${ph.name}"
+                th:disabled="${ph.suspended}">
+        </option>
       </select>
       <p class="alert alert-danger" th:errorclass="error" th:errors="*{photographer.id}" th:if="${#fields.hasErrors('photographer.id')}" />
     </div>
+
 
     <div class="form-group mx-sm-3 mb-2">
       <button class="btn btn-success" type="submit">Salvar</button>
