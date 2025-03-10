@@ -3,6 +3,7 @@ package br.edu.ifpb.photobean.controller;
 import br.edu.ifpb.photobean.DTO.PhotoFeedDTO;
 import br.edu.ifpb.photobean.model.Photo;
 import br.edu.ifpb.photobean.model.Photographer;
+import br.edu.ifpb.photobean.repository.PhotographerRepository;
 import br.edu.ifpb.photobean.service.PhotoService;
 import br.edu.ifpb.photobean.service.PhotographerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -40,11 +42,12 @@ public class PhotoController {
     }
 
     @PostMapping
-    public ModelAndView savePhoto(@RequestParam("file") MultipartFile file, Photo p, ModelAndView mav) {
+    public ModelAndView savePhoto(@RequestParam("file") MultipartFile file, Photo p, ModelAndView mav, Principal principal) {
         String message = "";
         String nextPage = "";
         try {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            p.setPhotographer(photographerService.findByUsername(principal.getName()));
             Photo photo = photoService.save(p, fileName, file.getBytes());
             Integer photographerId = photo.getPhotographer().getId();
             message = "Foto carregada com sucesso: " + file.getOriginalFilename();

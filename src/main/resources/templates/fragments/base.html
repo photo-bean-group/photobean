@@ -39,7 +39,7 @@
 
         <div class="user-info text-center d-flex justify-content-center align-items-center gap-2" sec:authorize="isAuthenticated()">
 
-            <a th:href="@{/home}" style="margin-right: 3px; font-size: 1em; color: gray"  sec:authorize="isAuthenticated()" sec:authentication="name"></a>
+            <a th:href="@{/photographers/my-profile}" style="margin-right: 3px; font-size: 1em; color: gray"  sec:authorize="isAuthenticated()" sec:authentication="name"></a>
 
             <a href="#" onclick="document.querySelector('#form-logout').submit()" class="btn btn-outline-warning my-2 my-sm-0">
                 <i class="bi bi-person" style="font-size: 1.5rem; margin-right: 5px;"></i>

@@ -1,6 +1,7 @@
 package br.edu.ifpb.photobean.controller;
 
 import br.edu.ifpb.photobean.model.Photo;
+import br.edu.ifpb.photobean.repository.PhotographerRepository;
 import br.edu.ifpb.photobean.service.CommentService;
 import br.edu.ifpb.photobean.service.FollowService;
 import br.edu.ifpb.photobean.service.PhotoService;
@@ -16,10 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.security.Principal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -39,9 +38,31 @@ public class PhotographerController {
     @Autowired
     private CommentService commentService;
 
+    @GetMapping("/my-profile")
+    public ModelAndView getPhotographerLogged(ModelAndView modelAndView, Principal principal) {
+        Photographer photographer = photographerService.findByUsername(principal.getName());
+
+        List<Photo> photos = photographer.getPhotos().stream()
+                .sorted(Comparator.comparing(Photo::getId).reversed())
+                .collect(Collectors.toList());
+
+        boolean isFollowing = followService.findByFollowerAndFollowee(photographer, photographer) != null;
+        long followersCount = followService.countByFollowee(photographer);
+        long followingCount = followService.countByFollower(photographer);
+
+        modelAndView.setViewName("photographers/details");
+        modelAndView.addObject("photographer", photographer);
+        modelAndView.addObject("photos", photos);
+        modelAndView.addObject("isFollowing", isFollowing);
+        modelAndView.addObject("canFollow", !Objects.equals(photographer.getUser().getUsername(), photographer.getUser().getUsername()));
+        modelAndView.addObject("followersCount", followersCount);
+        modelAndView.addObject("followingCount", followingCount);
+        return modelAndView;
+    }
+
     @GetMapping("/{id}/photos")
-    public ModelAndView getPhotographer(@PathVariable Integer id, ModelAndView modelAndView) {
-        Photographer loggedPhotographer = photographerService.findById(1);
+    public ModelAndView getPhotographer(@PathVariable Integer id, ModelAndView modelAndView, Principal principal) {
+        Photographer loggedPhotographer = photographerService.findByUsername(principal.getName());
         Photographer photographer = photographerService.findById(id);
 
         if (photographer == null) {
@@ -59,6 +80,7 @@ public class PhotographerController {
         modelAndView.setViewName("photographers/details");
         modelAndView.addObject("photographer", photographer);
         modelAndView.addObject("photos", photos);
+        modelAndView.addObject("canFollow", !Objects.equals(loggedPhotographer.getUser().getUsername(), photographer.getUser().getUsername()));
         modelAndView.addObject("isFollowing", isFollowing);
         modelAndView.addObject("followersCount", followersCount);
         modelAndView.addObject("followingCount", followingCount);
@@ -66,8 +88,8 @@ public class PhotographerController {
     }
 
     @PostMapping("{id}/follow")
-    public String followPhotographer(@PathVariable Integer id) {
-        Photographer photographerFollower = photographerService.findById(1);
+    public String followPhotographer(@PathVariable Integer id, Principal principal) {
+        Photographer photographerFollower = photographerService.findByUsername(principal.getName());
         Photographer photographerFollowee = photographerService.findById(id);
 
         if (photographerFollowee == null) {
@@ -79,8 +101,8 @@ public class PhotographerController {
     }
 
     @PostMapping("{id}/unfollow")
-    public String unfollowPhotographer(@PathVariable Integer id) {
-        Photographer photographerFollower = photographerService.findById(1);
+    public String unfollowPhotographer(@PathVariable Integer id, Principal principal) {
+        Photographer photographerFollower = photographerService.findByUsername(principal.getName());
         Photographer photographerFollowee = photographerService.findById(id);
 
         if (photographerFollowee == null) {
@@ -93,8 +115,9 @@ public class PhotographerController {
 
     @GetMapping("{id}/photos/{photoId}")
     public ModelAndView showPhotoDetails(@PathVariable Integer id, @PathVariable Integer photoId,
-                                         ModelAndView modelAndView) {
+                                         ModelAndView modelAndView, Principal principal) {
         Photographer photographer = photographerService.findById(id);
+        Photographer loggedPhotographer = photographerService.findByUsername(principal.getName());
 
         if (photographer == null) {
             throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
@@ -108,14 +131,14 @@ public class PhotographerController {
         modelAndView.setViewName("photos/details");
         modelAndView.addObject("photo", photo);
         modelAndView.addObject("photographer", photographer);
+        modelAndView.addObject("loggedPhotographer", loggedPhotographer);
         return modelAndView;
     }
 
     @PostMapping("{id}/photos/{photoId}/comments")
     public String addComment(@PathVariable Integer id, @PathVariable Integer photoId,
-                             @RequestParam String comment) {
-        //Para fins de apresentação ta usando o id:1 como o fotografo comentando.
-        Photographer photographer = photographerService.findById(1);
+                             @RequestParam String comment, Principal principal) {
+        Photographer photographer = photographerService.findByUsername(principal.getName());
 
         if (photographer == null) {
             throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
@@ -203,12 +226,4 @@ public class PhotographerController {
         }
         return "redirect:/photographers/list";
     }
-
-
-
-
-
-
-
-
 }

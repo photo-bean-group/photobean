@@ -22,7 +22,7 @@
                 </h6>
                 <ul class="list-unstyled">
                     <li th:each="comment : ${photo.comments}">
-                        <a class="no-decoration" th:href="@{/photographers/{photographerId}/photos (photographerId=${photographer.id})}">
+                        <a class="no-decoration" th:href="@{/photographers/{photographerId}/photos (photographerId=${comment.photographer.id})}">
                             <strong th:text="${comment.photographer.name}"></strong>:
                         </a>
                         <span th:text="${comment.commentText}"></span>
@@ -39,11 +39,11 @@
                 </form>
                 <hr>
                 <div class="d-flex align-items-center">
-                    <form th:if="!${photographer.suspended}" th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}" method="post">
-                        <input type="hidden" name="photographerId" th:value="${photographer.id}">
+                    <form th:if="${!loggedPhotographer.suspended}" th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}" method="post">
+                        <input type="hidden" name="photographerId" th:value="${loggedPhotographer.id}">
                         <button type="submit" class="btn p-0 border-0 bg-transparent" style="cursor: pointer;">
                             <i class="bi" style="font-size: 2rem;"
-                               th:classappend="${photo.likes.contains(photographer) ? 'bi-heart-fill text-danger' : 'bi-heart text-primary'}">
+                               th:classappend="${photo.likes.contains(loggedPhotographer) ? 'bi-heart-fill text-danger' : 'bi-heart text-primary'}">
                             </i>
                         </button>
                     </form>

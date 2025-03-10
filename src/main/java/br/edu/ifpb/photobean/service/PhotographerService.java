@@ -49,6 +49,10 @@ public class PhotographerService implements Service<Photographer, Integer> {
         return photographerRepository.save(photographer);
     }
 
+    public Photographer findByUsername(String username) {
+        return photographerRepository.findByUsername(username);
+    }
+
     public Photographer suspendPhotographer(Integer id) {
         Photographer photographer = findById(id);
         if (photographer == null) {
