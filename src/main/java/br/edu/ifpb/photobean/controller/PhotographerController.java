@@ -8,6 +8,7 @@ import br.edu.ifpb.photobean.service.PhotographerService;
 import br.edu.ifpb.photobean.model.Photographer;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/photographers")
+@PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
 public class PhotographerController {
 
     @Autowired
@@ -36,34 +38,6 @@ public class PhotographerController {
 
     @Autowired
     private CommentService commentService;
-
-    @RequestMapping("/form")
-    public ModelAndView getForm(ModelAndView modelAndView) {
-        modelAndView.setViewName("photographers/form");
-        modelAndView.addObject("photographer", new Photographer());
-        return modelAndView;
-    }
-
-    @PostMapping
-    public ModelAndView savePhotographer(@Valid Photographer photographer, ModelAndView modelAndView,
-                                         BindingResult validation, RedirectAttributes attr) {
-        if (validation.hasErrors()) {
-            modelAndView.setViewName("contas/form");
-            return modelAndView;
-        }
-        String operation = (photographer.getId() == null) ? "criado" : "salvo";
-
-        photographerService.save(photographer);
-        modelAndView.setViewName("redirect:/photos/form");
-
-
-        attr.addFlashAttribute("message", "Fotógrafo " + operation + " com sucesso!");
-
-        // Adiciona o fotógrafo recém-cadastrado como atributo
-
-
-        return modelAndView;
-    }
 
     @GetMapping("/{id}/photos")
     public ModelAndView getPhotographer(@PathVariable Integer id, ModelAndView modelAndView) {

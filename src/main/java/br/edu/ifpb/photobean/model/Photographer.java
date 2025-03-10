@@ -35,4 +35,8 @@ public class Photographer {
 
     @OneToMany(mappedBy = "followee")
     private Set<Follow> followers;
+
+    @OneToOne
+    @JoinColumn(name = "username")
+    private User user;
 }

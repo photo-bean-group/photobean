@@ -1,8 +1,8 @@
-<html layout:decorate="~{layout/layout.html}" th:with="titulo='Cadastro de Fotógrafos'" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html layout:decorate="~{layout/layout.html}" th:with="titulo='Cadastro de Fotógrafo'" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <body>
-    <div layout:fragment="content">
-        <form method="POST" th:action="@{/photographers}" th:object="${photographer}">
+    <div layout:fragment="content" style="width: 500px">
+        <form method="POST" th:action="@{/auth/signup/save}" th:object="${photographer}">
             <input class="form-control" th:field="*{id}" type="hidden" />
 
             <div class="form-group mx-sm-3 mb-2">
@@ -18,6 +18,18 @@
             </div>
 
             <div class="form-group mx-sm-3 mb-2">
+                <label for="username">Usuário</label>
+                <input class="form-control mb-2" th:field="*{user.username}" type="text" />
+                <p class="alert alert-danger" th:errorclass="error" th:errors="*{user.username}" th:if="${#fields.hasErrors('user.username')}" />
+            </div>
+
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="password">Senha</label>
+                <input class="form-control mb-2" th:field="*{user.password}" type="password" />
+                <p class="alert alert-danger" th:errorclass="error" th:errors="*{user.password}" th:if="${#fields.hasErrors('user.password')}" />
+            </div>
+
+            <div class="form-group mx-sm-3 mb-2 text-end">
                 <button class="btn btn-success" type="submit">Salvar</button>
                 <a class="btn btn-outline-warning" th:href="@{/home}">Cancelar</a>
             </div>
