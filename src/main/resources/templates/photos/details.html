@@ -17,9 +17,17 @@
                     </div>
                 </a>
                 <hr>
-                <h6>
-                    Comentários <span th:text="'- ' + ${photo.comments.size()}"></span>
+                <h6 class="d-flex justify-content-between align-items-center">
+                    <span>
+                        Comentários <span th:text="'- ' + ${photo.comments.size()}"></span>
+                     </span>
+                    <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                       th:href="@{/photographers/{id}/photos/{photoId}/comments/pdf(id=${photographer.id}, photoId=${photo.id})}"
+                       class="btn btn-sm btn-outline-danger">
+                        Gerar PDF
+                    </a>
                 </h6>
+
                 <ul class="list-unstyled">
                     <li th:each="comment : ${comments}" class="mb-2">
                         <a class="no-decoration"
