@@ -1,25 +1,34 @@
 <html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{/layout/layout}" th:with="titulo='Home'" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <body>
-<div layout:fragment="content">
+<div layout:fragment="content" class="container py-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4">PhotoBean</h1>
+        <p class="lead">Uma plataforma para amantes da fotografia compartilharem sua paixão.</p>
+    </div>
 
-    <h2>PhotoBean</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4 mb-4">
+                <h3 class="text-primary">Como administrador, você poderá:</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Listar e suspender fotógrafos do sistema, usando uma conta de <strong>Administrador</strong>.</li>
+                </ul>
+            </div>
+        </div>
 
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dicta doloremque doloribus eligendi obcaecati quae rem, voluptate. Aspernatur distinctio eius itaque minima natus nulla officia perferendis quos tempore veritatis. Asperiores, autem!</p>
-
-    <div>Como administrador, você poderá:</div>
-    <ul>
-        <li>Listar e suspender fotógrafos do sistema, usando uma conta de
-            <strong>Administrador</strong>
-        </li>
-    </ul>
-    <div>Como fotógrafo, você poderá:</div>
-    <ul>
-        <li>Publicar fotografias</li>
-        <li>Seguir outros fotógrafos</li>
-        <li>Curtir fotografias</li>
-        <li>Enviar comentários</li>
-    </ul>
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4 mb-4">
+                <h3 class="text-success">Como fotógrafo, você poderá:</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Publicar fotografias</li>
+                    <li class="list-group-item">Seguir outros fotógrafos</li>
+                    <li class="list-group-item">Curtir fotografias</li>
+                    <li class="list-group-item">Enviar comentários</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>

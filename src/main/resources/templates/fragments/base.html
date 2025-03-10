@@ -21,19 +21,30 @@
     <nav class="navbar navbar-expand navbar-light bg-light d-flex justify-content-between mb-3">
         <div class="navbar-nav">
             <a class="nav-item nav-link" th:href="@{/home}">Home</a>
-<!--            <a class="nav-item nav-link" th:href="@{/photographers/feed}">Feed</a>-->
-
-            <a class="nav-item nav-link" th:href="@{/photographers/form}">
-                Novo Fotógrafo
-            </a>
-            <a class="nav-item nav-link" th:href="@{/photos/form}">Nova Foto</a>
-            <a class="nav-item nav-link" th:href="@{/photographers/list}">Listar Fotógrafos</a>
+            <a class="nav-item nav-link" th:href="@{/photographers/feed}">Feed</a>
+            <a class="nav-item nav-link" th:href="@{/photos/form}" sec:authorize="isAuthenticated()">Nova Foto</a>
+            <a class="nav-item nav-link" th:href="@{/photographers/list}" sec:authorize="hasRole('ADMIN')">Listar Fotógrafos</a>
         </div>
-        <form class="form-inline m-2 my-2 my-lg-0 " method="POST">
-            <span style="margin-right: 3px; font-size: 0.8em;"></span>
-            <button type="submit" class="btn btn-outline-warning my-2 my-sm-0">
-                Sair
-            </button>
-        </form>
+        <div class="user-info text-center d-flex justify-content-center align-items-center gap-2 mx-2" sec:authorize="!isAuthenticated()">
+            <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/auth/login}">
+                <i class="bi bi-person" style="font-size: 1.5rem; margin-right: 5px;"></i>
+                Login
+            </a>
+
+            <a class="btn btn-outline-primary my-2 my-sm-0" th:href="@{/auth/signup}">
+                <i class="bi bi-person-plus" style="font-size: 1.5rem; margin-right: 5px;"></i>
+                Sign Up
+            </a>
+        </div>
+
+        <div class="user-info text-center d-flex justify-content-center align-items-center gap-2" sec:authorize="isAuthenticated()">
+
+            <a th:href="@{/home}" style="margin-right: 3px; font-size: 1em; color: gray"  sec:authorize="isAuthenticated()" sec:authentication="name"></a>
+
+            <a href="#" onclick="document.querySelector('#form-logout').submit()" class="btn btn-outline-warning my-2 my-sm-0">
+                <i class="bi bi-person" style="font-size: 1.5rem; margin-right: 5px;"></i>
+                Sair</a>
+            <form id="form-logout" th:action="@{/auth/logout}" method="POST"></form>
+        </div>
     </nav>
 </div>
