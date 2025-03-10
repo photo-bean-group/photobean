@@ -1,6 +1,8 @@
 package br.edu.ifpb.photobean.controller;
 
 import br.edu.ifpb.photobean.model.Photo;
+import br.edu.ifpb.photobean.model.Comment;
+
 import br.edu.ifpb.photobean.repository.PhotographerRepository;
 import br.edu.ifpb.photobean.service.CommentService;
 import br.edu.ifpb.photobean.service.FollowService;
@@ -114,13 +116,16 @@ public class PhotographerController {
     }
 
     @GetMapping("{id}/photos/{photoId}")
-    public ModelAndView showPhotoDetails(@PathVariable Integer id, @PathVariable Integer photoId,
-                                         ModelAndView modelAndView, Principal principal) {
+    public ModelAndView showPhotoDetails(@PathVariable Integer id,
+                                         @PathVariable Integer photoId,
+                                         ModelAndView modelAndView,
+                                         Principal principal) {
+
         Photographer photographer = photographerService.findById(id);
         Photographer loggedPhotographer = photographerService.findByUsername(principal.getName());
 
         if (photographer == null) {
-            throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
+            throw new IllegalArgumentException("Fotógrafo não encontrado com o ID " + id);
         }
 
         Photo photo = photographer.getPhotos().stream()
@@ -128,12 +133,20 @@ public class PhotographerController {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Foto não encontrada"));
 
+        // Ordena os comentários pela data de criação (mais antigo primeiro)
+        List<Comment> sortedComments = photo.getComments().stream()
+                .sorted(Comparator.comparing(Comment::getCreateAt))
+                .collect(Collectors.toList());
+
         modelAndView.setViewName("photos/details");
         modelAndView.addObject("photo", photo);
         modelAndView.addObject("photographer", photographer);
         modelAndView.addObject("loggedPhotographer", loggedPhotographer);
+        modelAndView.addObject("comments", sortedComments); // Lista ordenada aqui
+
         return modelAndView;
     }
+
 
     @PostMapping("{id}/photos/{photoId}/comments")
     public String addComment(@PathVariable Integer id, @PathVariable Integer photoId,
@@ -226,4 +239,48 @@ public class PhotographerController {
         }
         return "redirect:/photographers/list";
     }
+
+    @PostMapping("{id}/photos/{photoId}/comments/{commentId}/edit")
+    public String editComment(@PathVariable Integer id,
+                              @PathVariable Integer photoId,
+                              @PathVariable Integer commentId,
+                              @RequestParam String newText,
+                              Principal principal,
+                              RedirectAttributes attr) {
+
+        Photographer photographer = photographerService.findByUsername(principal.getName());
+
+        try {
+            if (newText == null || newText.trim().isEmpty()) {
+                commentService.deleteComment(commentId, photographer);
+                attr.addFlashAttribute("message", "Comentário vazio removido com sucesso.");
+            } else {
+                commentService.editComment(commentId, newText, photographer);
+                attr.addFlashAttribute("message", "Comentário alterado com sucesso.");
+            }
+        } catch (Exception e) {
+            attr.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/photographers/" + id + "/photos/" + photoId;
+    }
+
+    @PostMapping("{id}/photos/{photoId}/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable Integer id,
+                                @PathVariable Integer photoId,
+                                @PathVariable Integer commentId,
+                                Principal principal,
+                                RedirectAttributes attr) {
+        Photographer photographer = photographerService.findByUsername(principal.getName());
+
+        try {
+            commentService.deleteComment(commentId, photographer);
+            attr.addFlashAttribute("message", "Comentário excluído com sucesso.");
+        } catch (Exception e) {
+            attr.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/photographers/" + id + "/photos/" + photoId;
+    }
+
 }

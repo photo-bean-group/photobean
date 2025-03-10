@@ -37,4 +37,28 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    public Comment editComment(Integer commentId, String newText, Photographer photographer) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comentário não encontrado com o ID: " + commentId));
+
+        if (!comment.getPhotographer().equals(photographer)) {
+            throw new IllegalStateException("Operação não permitida: comentário não pertence ao fotógrafo.");
+        }
+
+        comment.setCommentText(newText);
+        // Data permanece inalterada
+        return commentRepository.save(comment);
+    }
+
+    public void deleteComment(Integer commentId, Photographer photographer) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comentário não encontrado com o ID: " + commentId));
+
+        if (!comment.getPhotographer().equals(photographer)) {
+            throw new IllegalStateException("Operação não permitida: comentário não pertence ao fotógrafo.");
+        }
+
+        commentRepository.delete(comment);
+    }
+
 }

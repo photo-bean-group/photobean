@@ -21,13 +21,47 @@
                     Comentários <span th:text="'- ' + ${photo.comments.size()}"></span>
                 </h6>
                 <ul class="list-unstyled">
-                    <li th:each="comment : ${photo.comments}">
-                        <a class="no-decoration" th:href="@{/photographers/{photographerId}/photos (photographerId=${comment.photographer.id})}">
+                    <li th:each="comment : ${comments}" class="mb-2">
+                        <a class="no-decoration"
+                           th:href="@{/photographers/{photographerId}/photos (photographerId=${comment.photographer.id})}">
                             <strong th:text="${comment.photographer.name}"></strong>:
                         </a>
                         <span th:text="${comment.commentText}"></span>
+
+                        <div th:if="${loggedPhotographer != null and loggedPhotographer.id == comment.photographer.id}" class="dropdown d-inline">
+                            <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form method="post"
+                                          th:action="@{/photographers/{id}/photos/{photoId}/comments/{commentId}/edit(id=${photographer.id}, photoId=${photo.id}, commentId=${comment.id})}"
+                                          class="px-3">
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" class="form-control form-control-sm" name="newText"
+                                                   th:value="${comment.commentText}" required>
+                                            <button class="btn btn-outline-primary btn-sm" type="submit">Editar</button>
+                                        </div>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form method="post"
+                                          th:action="@{/photographers/{id}/photos/{photoId}/comments/{commentId}/delete(id=${photographer.id}, photoId=${photo.id}, commentId=${comment.id})}"
+                                          onsubmit="return confirm('Deseja realmente excluir esse comentário?');"
+                                          class="px-3">
+                                        <button class="btn btn-link btn-sm text-danger p-0" type="submit">
+                                            <i class="bi bi-trash"></i> Excluir
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
+
+
+
+
             </div>
             <div class="mt-auto">
                 <hr>
