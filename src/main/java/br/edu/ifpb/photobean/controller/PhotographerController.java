@@ -9,6 +9,8 @@ import br.edu.ifpb.photobean.service.FollowService;
 import br.edu.ifpb.photobean.service.PhotoService;
 import br.edu.ifpb.photobean.service.PhotographerService;
 import br.edu.ifpb.photobean.model.Photographer;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +20,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.itextpdf.text.pdf.PdfWriter;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.security.Principal;
 import java.util.*;
@@ -281,6 +286,50 @@ public class PhotographerController {
         }
 
         return "redirect:/photographers/" + id + "/photos/" + photoId;
+    }
+
+
+    @GetMapping("/{id}/photos/{photoId}/comments/pdf")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void generateCommentsPdf(@PathVariable Integer id,
+                                    @PathVariable Integer photoId,
+                                    HttpServletResponse response) {
+
+        try {
+            Photographer photographer = photographerService.findById(id);
+            Photo photo = photographer.getPhotos().stream()
+                    .filter(p -> p.getId().equals(photoId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Foto não encontrada"));
+
+            List<Comment> sortedComments = photo.getComments().stream()
+                    .sorted(Comparator.comparing(Comment::getCreateAt))
+                    .collect(Collectors.toList());
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"comentarios-foto-" + photoId + ".pdf\"");
+
+            Document document = new Document();
+            PdfWriter.getInstance(document, response.getOutputStream());
+
+            document.open();
+            document.add(new Paragraph("Comentários da Foto ID: " + photoId));
+            document.add(new Paragraph("Fotógrafo: " + photographer.getName()));
+            document.add(new Paragraph(" "));
+
+            for (Comment comment : sortedComments) {
+                document.add(new Paragraph(
+                        comment.getCreateAt().toString() + " - " +
+                                comment.getPhotographer().getName() + ": " +
+                                comment.getCommentText()
+                ));
+            }
+
+            document.close();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar PDF: " + e.getMessage(), e);
+        }
     }
 
 }
