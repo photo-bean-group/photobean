@@ -21,4 +21,5 @@ public class PhotoTag {
     @ManyToOne // uma tag de foto é associada a uma unica tag
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
+
 }

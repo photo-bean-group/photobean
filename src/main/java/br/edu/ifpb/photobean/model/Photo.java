@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -32,6 +33,14 @@ public class Photo implements Serializable {
 
     @OneToMany(mappedBy = "photo") // uma foto pode ter várias tags através de PhotoTag
     private Set<PhotoTag> photoTags;
+
+    public Set<Tag> getTags() {
+        Set<Tag> tags = new HashSet<>();
+        for (PhotoTag photoTag : photoTags) {
+            tags.add(photoTag.getTag());  // Assuming PhotoTag has a reference to Tag
+        }
+        return tags;
+    }
 
     @ManyToMany // Relacionamento muitos-para-muitos para curtidas
     @JoinTable(

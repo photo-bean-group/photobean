@@ -16,6 +16,96 @@
                         </div>
                     </div>
                 </a>
+
+                <div class="mt-3">
+                    <h6>Hashtags</h6>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="hashtagDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Adicionar Hashtag
+                        </button>
+                        <ul class="dropdown-menu p-3" aria-labelledby="hashtagDropdown" style="width: 300px;">
+                            <!-- Campo de busca para autocomplete -->
+                            <input type="text" id="hashtagInput" class="form-control mb-2" placeholder="Digite ou selecione uma hashtag...">
+
+                            <!-- Lista de hashtags cadastradas (Vazia inicialmente) -->
+                            <div id="hashtagList" class="list-group" style="max-height: 200px; overflow-y: auto;">
+                                <!-- A lista será preenchida dinamicamente -->
+                            </div>
+
+
+
+                            <!-- Formulário para adicionar hashtag -->
+                            <form method="post" th:action="@{/photographers/{id}/photos/{photoId}/add-hashtag(id=${photographer.id}, photoId=${photo.id})}">
+                                <input type="hidden" name="hashtag" id="selectedHashtag">
+                                <button type="submit" class="btn btn-primary btn-sm mt-2 w-100">Adicionar</button>
+                            </form>
+                        </ul>
+                    </div>
+
+                    <!-- Exibir hashtags associadas -->
+                    <div class="mt-2">
+                        <span th:each="tag : ${photo.tags}" class="badge bg-primary me-1" th:text="'#' + ${tag.tagName}"></span>
+                    </div>
+                </div>
+
+                <script>
+                    // Função para preencher a lista de hashtags no dropdown
+                    function updateHashtagList(tags) {
+                        const hashtagList = document.getElementById('hashtagList');
+                        hashtagList.innerHTML = ''; // Limpa a lista antes de adicionar novas tags
+
+                        tags.forEach(tag => {
+                            const tagItem = document.createElement('a');
+                            tagItem.classList.add('list-group-item', 'list-group-item-action');
+                            tagItem.textContent = '#' + tag.tagName;
+                            tagItem.href = 'javascript:void(0)';
+                            tagItem.onclick = function () {
+                                selectHashtag(tagItem);
+                            };
+                            hashtagList.appendChild(tagItem);
+                        });
+                    }
+
+                    // Função chamada quando uma hashtag é selecionada
+                    function selectHashtag(element) {
+                        document.getElementById("hashtagInput").value = element.textContent.substring(1); // Remover o '#' ao exibir
+                        document.getElementById("selectedHashtag").value = element.textContent.substring(1); // Valor para o form
+                        document.getElementById('hashtagList').innerHTML = ''; // Limpar a lista após seleção
+                    }
+
+                    // Evento de input no campo de busca (autocomplete)
+                    document.getElementById("hashtagInput").addEventListener("input", function () {
+                        const input = this.value.toLowerCase();
+                        if (input.length >= 2) { // Começar busca após 2 caracteres
+                            fetchHashtags(input);
+                        } else {
+                            document.getElementById('hashtagList').innerHTML = ''; // Limpar se o campo estiver vazio
+                        }
+                    });
+
+                    // Função para buscar hashtags no backend
+                    function fetchHashtags(query) {
+                        fetch(`/photobean/photographers/search/tags?query=${query}`)
+                            .then(response => {
+                                console.log(response);
+                                if (!response.ok) {
+                                    throw new Error(`Erro ao buscar hashtags: ${response.status} - ${response.statusText}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log("Hashtags encontradas:", data);
+                                // Aqui você pode atualizar o estado ou o DOM conforme necessário
+                            })
+                            .catch(error => {
+                                console.error("Erro ao buscar hashtags:", error);
+                            });
+
+                    }
+                </script>
+
+
+
                 <hr>
                 <h6 class="d-flex justify-content-between align-items-center">
                     <span>
