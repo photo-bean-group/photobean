@@ -29,7 +29,10 @@
                             </div>
 
                             <!-- Formulário para adicionar hashtag -->
-                            <form method="post" th:action="@{/photographers/{id}/photos/{photoId}/add-hashtag(id=${photographer.id}, photoId=${photo.id})}">
+                            <form
+                                    method="post"
+                                    th:action="@{/photographers/{id}/photos/{photoId}/add-hashtag(id=${photographer.id}, photoId=${photo.id})}"
+                                    onsubmit="updateAction(this)">
                                 <input type="hidden" name="hashtag" id="selectedHashtag">
                                 <button type="submit" class="btn btn-primary btn-sm mt-2 w-100">Adicionar</button>
                             </form>
@@ -48,142 +51,152 @@
                 </div>
             </div>
 
-                <script>
-                    function updateHashtagList(tags) {
-                        const hashtagList = document.getElementById('hashtagList');
-                        hashtagList.innerHTML = '';
+            <script>
+                function updateHashtagList(tags) {
+                    const hashtagList = document.getElementById('hashtagList');
+                    hashtagList.innerHTML = '';
 
-                        tags.forEach(tag => {
-                            const tagItem = document.createElement('a');
-                            tagItem.classList.add('list-group-item', 'list-group-item-action');
-                            tagItem.textContent = '#' + tag.tagName;
-                            tagItem.href = 'javascript:void(0)';
-                            tagItem.onclick = function () {
-                                console.log("Clicou na hashtag:", tagItem.textContent);
-                                selectHashtag(tagItem);
-                            };
-                            hashtagList.appendChild(tagItem);
-                        });
-                    }
-
-                    function selectHashtag(element) {
-                        document.getElementById("hashtagInput").value = element.textContent.substring(1).trim(); // Preenche o campo de input
-                        document.getElementById("hashtagList").innerHTML = ''; // Limpa a lista
-                    }
-
-                    document.getElementById("hashtagInput").addEventListener("input", function () {
-                        const input = this.value.toLowerCase();
-                        if (input.length >= 1) {
-                            fetchHashtags(input);
-                        } else {
-                            document.getElementById('hashtagList').innerHTML = '';
-                        }
+                    tags.forEach(tag => {
+                        const tagItem = document.createElement('a');
+                        tagItem.classList.add('list-group-item', 'list-group-item-action');
+                        tagItem.textContent = '#' + tag.tagName;
+                        tagItem.href = 'javascript:void(0)';
+                        tagItem.onclick = function () {
+                            console.log("Clicou na hashtag:", tagItem.textContent);
+                            selectHashtag(tagItem);
+                        };
+                        hashtagList.appendChild(tagItem);
                     });
+                }
 
-                    // Função para buscar hashtags no backend
-                    function fetchHashtags(query) {
-                        fetch(`/photobean/photographers/search/tag?query=${query}`)
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`Erro ao buscar hashtags: ${response.status} - ${response.statusText}`);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                console.log("Hashtags encontradas:", data);
-                                updateHashtagList(data);
-                            })
-                            .catch(error => {
-                                console.error("Erro ao buscar hashtags:", error);
-                            });
-
+                function updateAction(form) {
+                    let hashtag = document.getElementById("hashtagInput").value.trim();
+                    if (hashtag) {
+                        form.action += "?hashtag=" + hashtag;
+                    } else {
+                        alert("Por favor, digite uma hashtag.");
+                        event.preventDefault(); // Impede o envio se o campo estiver vazio
                     }
-                </script>
+                }
+
+                function selectHashtag(element) {
+                    document.getElementById("hashtagInput").value = element.textContent.substring(1).trim(); // Preenche o campo de input
+                    document.getElementById("hashtagList").innerHTML = ''; // Limpa a lista
+                }
+
+                document.getElementById("hashtagInput").addEventListener("input", function () {
+                    const input = this.value.toLowerCase();
+                    if (input.length >= 1) {
+                        fetchHashtags(input);
+                    } else {
+                        document.getElementById('hashtagList').innerHTML = '';
+                    }
+                });
+
+                // Função para buscar hashtags no backend
+                function fetchHashtags(query) {
+                    fetch(`/photobean/photographers/search/tag?query=${query}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Erro ao buscar hashtags: ${response.status} - ${response.statusText}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Hashtags encontradas:", data);
+                            updateHashtagList(data);
+                        })
+                        .catch(error => {
+                            console.error("Erro ao buscar hashtags:", error);
+                        });
+
+                }
+            </script>
 
 
 
-                <hr>
-                <h6 class="d-flex justify-content-between align-items-center">
+            <hr>
+            <h6 class="d-flex justify-content-between align-items-center">
                     <span>
                         Comentários <span th:text="'- ' + ${photo.comments.size()}"></span>
                      </span>
-                    <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-                       th:href="@{/photographers/{id}/photos/{photoId}/comments/pdf(id=${photographer.id}, photoId=${photo.id})}"
-                       class="btn btn-sm btn-outline-danger">
-                        Gerar PDF
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                   th:href="@{/photographers/{id}/photos/{photoId}/comments/pdf(id=${photographer.id}, photoId=${photo.id})}"
+                   class="btn btn-sm btn-outline-danger">
+                    Gerar PDF
+                </a>
+            </h6>
+
+            <ul class="list-unstyled">
+                <li th:each="comment : ${comments}" class="mb-2">
+                    <a class="no-decoration"
+                       th:href="@{/photographers/{photographerId}/photos (photographerId=${comment.photographer.id})}">
+                        <strong th:text="${comment.photographer.name}"></strong>:
                     </a>
-                </h6>
+                    <span th:text="${comment.commentText}"></span>
 
-                <ul class="list-unstyled">
-                    <li th:each="comment : ${comments}" class="mb-2">
-                        <a class="no-decoration"
-                           th:href="@{/photographers/{photographerId}/photos (photographerId=${comment.photographer.id})}">
-                            <strong th:text="${comment.photographer.name}"></strong>:
-                        </a>
-                        <span th:text="${comment.commentText}"></span>
-
-                        <div th:if="${loggedPhotographer != null and loggedPhotographer.id == comment.photographer.id}" class="dropdown d-inline">
-                            <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-three-dots"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <form method="post"
-                                          th:action="@{/photographers/{id}/photos/{photoId}/comments/{commentId}/edit(id=${photographer.id}, photoId=${photo.id}, commentId=${comment.id})}"
-                                          class="px-3">
-                                        <div class="input-group input-group-sm">
-                                            <input type="text" class="form-control form-control-sm" name="newText"
-                                                   th:value="${comment.commentText}" required>
-                                            <button class="btn btn-outline-primary btn-sm" type="submit">Editar</button>
-                                        </div>
-                                    </form>
-                                </li>
-                                <li>
-                                    <form method="post"
-                                          th:action="@{/photographers/{id}/photos/{photoId}/comments/{commentId}/delete(id=${photographer.id}, photoId=${photo.id}, commentId=${comment.id})}"
-                                          onsubmit="return confirm('Deseja realmente excluir esse comentário?');"
-                                          class="px-3">
-                                        <button class="btn btn-link btn-sm text-danger p-0" type="submit">
-                                            <i class="bi bi-trash"></i> Excluir
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-
-
-
-
-            </div>
-            <div class="mt-auto">
-                <hr>
-                <form method="post" th:action="@{/photographers/{id}/photos/{photoId}/comments (id=${photographer.id}, photoId=${photo.id})}">
-                    <div class="input-group">
-                        <input type="text" name="comment" class="form-control" placeholder="Adicione um comentário..." required>
-                        <button class="btn btn-success" type="submit">Enviar</button>
-                    </div>
-                </form>
-                <hr>
-                <div class="d-flex align-items-center">
-                    <form th:if="${!loggedPhotographer.suspended}" th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}" method="post">
-                        <input type="hidden" name="photographerId" th:value="${loggedPhotographer.id}">
-                        <button type="submit" class="btn p-0 border-0 bg-transparent" style="cursor: pointer;">
-                            <i class="bi" style="font-size: 2rem;"
-                               th:classappend="${photo.likes.contains(loggedPhotographer) ? 'bi-heart-fill text-danger' : 'bi-heart text-primary'}">
-                            </i>
+                    <div th:if="${loggedPhotographer != null and loggedPhotographer.id == comment.photographer.id}" class="dropdown d-inline">
+                        <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
                         </button>
-                    </form>
-                    <p th:if="${photographer.suspended}" class="text-danger">Este fotógrafo está suspenso e não pode interagir.</p>
-                    <span class="ms-3 mb-3">
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form method="post"
+                                      th:action="@{/photographers/{id}/photos/{photoId}/comments/{commentId}/edit(id=${photographer.id}, photoId=${photo.id}, commentId=${comment.id})}"
+                                      class="px-3">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control form-control-sm" name="newText"
+                                               th:value="${comment.commentText}" required>
+                                        <button class="btn btn-outline-primary btn-sm" type="submit">Editar</button>
+                                    </div>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="post"
+                                      th:action="@{/photographers/{id}/photos/{photoId}/comments/{commentId}/delete(id=${photographer.id}, photoId=${photo.id}, commentId=${comment.id})}"
+                                      onsubmit="return confirm('Deseja realmente excluir esse comentário?');"
+                                      class="px-3">
+                                    <button class="btn btn-link btn-sm text-danger p-0" type="submit">
+                                        <i class="bi bi-trash"></i> Excluir
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+
+
+
+
+        </div>
+        <div class="mt-auto">
+            <hr>
+            <form method="post" th:action="@{/photographers/{id}/photos/{photoId}/comments (id=${photographer.id}, photoId=${photo.id})}">
+                <div class="input-group">
+                    <input type="text" name="comment" class="form-control" placeholder="Adicione um comentário..." required>
+                    <button class="btn btn-success" type="submit">Enviar</button>
+                </div>
+            </form>
+            <hr>
+            <div class="d-flex align-items-center">
+                <form th:if="${!loggedPhotographer.suspended}" th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}" method="post">
+                    <input type="hidden" name="photographerId" th:value="${loggedPhotographer.id}">
+                    <button type="submit" class="btn p-0 border-0 bg-transparent" style="cursor: pointer;">
+                        <i class="bi" style="font-size: 2rem;"
+                           th:classappend="${photo.likes.contains(loggedPhotographer) ? 'bi-heart-fill text-danger' : 'bi-heart text-primary'}">
+                        </i>
+                    </button>
+                </form>
+                <p th:if="${photographer.suspended}" class="text-danger">Este fotógrafo está suspenso e não pode interagir.</p>
+                <span class="ms-3 mb-3">
                         <strong>Curtidas:</strong>
                         <span th:text="${photo.likes.size()}"></span>
                     </span>
-                </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 </div>
 </body>

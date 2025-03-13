@@ -343,6 +343,7 @@ public class PhotographerController {
                                     Principal principal,
                                     RedirectAttributes attributes) {
 
+        String hashtagCorrigida = hashtag.replaceAll(",$", "");
         Photographer photographer = photographerService.findByUsername(principal.getName());
         Photo photo = photoService.findById(photoId);
 
@@ -352,20 +353,17 @@ public class PhotographerController {
         }
 
         // Buscar a tag exata pelo nome
-        Tag tag = tagService.findByTagName(hashtag);
+        Tag tag = tagService.findByTagName(hashtagCorrigida);
 
         if (tag == null) {
-            System.out.println("Criando nova tag: " + hashtag);
             tag = new Tag();
-            tag.setTagName(hashtag);
-            System.out.println("Nova tag salva1: " + tag.getTagName());
+            tag.setTagName(hashtagCorrigida);
             tag = tagService.save(tag);
-            System.out.println("Nova tag salva2: " + tag.getTagName());
         }
 
         // Verifica se a tag já está associada à foto
         boolean tagAlreadyExists = photo.getTags().stream()
-                .anyMatch(existingTag -> existingTag.getTagName().equalsIgnoreCase(hashtag));
+                .anyMatch(existingTag -> existingTag.getTagName().equalsIgnoreCase(hashtagCorrigida));
 
         if (!tagAlreadyExists) {
             PhotoTag photoTag = new PhotoTag();
