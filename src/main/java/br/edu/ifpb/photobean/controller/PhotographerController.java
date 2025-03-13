@@ -1,14 +1,9 @@
 package br.edu.ifpb.photobean.controller;
 
-import br.edu.ifpb.photobean.model.Photo;
-import br.edu.ifpb.photobean.model.Comment;
+import br.edu.ifpb.photobean.model.*;
 
 import br.edu.ifpb.photobean.repository.PhotographerRepository;
-import br.edu.ifpb.photobean.service.CommentService;
-import br.edu.ifpb.photobean.service.FollowService;
-import br.edu.ifpb.photobean.service.PhotoService;
-import br.edu.ifpb.photobean.service.PhotographerService;
-import br.edu.ifpb.photobean.model.Photographer;
+import br.edu.ifpb.photobean.service.*;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import jakarta.validation.Valid;
@@ -38,6 +33,12 @@ public class PhotographerController {
 
     @Autowired
     private FollowService followService;
+
+    @Autowired
+    private TagService tagService;
+
+    @Autowired
+    private PhotoTagService photoTagService;
 
     @Autowired
     private PhotoService photoService;
@@ -143,11 +144,14 @@ public class PhotographerController {
                 .sorted(Comparator.comparing(Comment::getCreateAt))
                 .collect(Collectors.toList());
 
+        Set<Tag> tags = photo.getTags();
+
         modelAndView.setViewName("photos/details");
         modelAndView.addObject("photo", photo);
         modelAndView.addObject("photographer", photographer);
         modelAndView.addObject("loggedPhotographer", loggedPhotographer);
         modelAndView.addObject("comments", sortedComments); // Lista ordenada aqui
+        modelAndView.addObject("tags", tags);
 
         return modelAndView;
     }
@@ -332,4 +336,55 @@ public class PhotographerController {
         }
     }
 
+    @PostMapping("{id}/photos/{photoId}/add-hashtag")
+    public String addHashtagToPhoto(@PathVariable Integer id,
+                                    @PathVariable Integer photoId,
+                                    @RequestParam String hashtag,
+                                    Principal principal,
+                                    RedirectAttributes attributes) {
+
+        String hashtagCorrigida = hashtag.replaceAll(",$", "");
+        Photographer photographer = photographerService.findByUsername(principal.getName());
+        Photo photo = photoService.findById(photoId);
+
+        if (photo == null || !photo.getPhotographer().equals(photographer)) {
+            attributes.addFlashAttribute("error", "Você não tem permissão para adicionar hashtags a essa foto.");
+            return "redirect:/photographers/" + id + "/photos"; // Redireciona para a página do fotógrafo
+        }
+
+        // Buscar a tag exata pelo nome
+        Tag tag = tagService.findByTagName(hashtagCorrigida);
+
+        if (tag == null) {
+            tag = new Tag();
+            tag.setTagName(hashtagCorrigida);
+            tag = tagService.save(tag);
+        }
+
+        // Verifica se a tag já está associada à foto
+        boolean tagAlreadyExists = photo.getTags().stream()
+                .anyMatch(existingTag -> existingTag.getTagName().equalsIgnoreCase(hashtagCorrigida));
+
+        if (!tagAlreadyExists) {
+            PhotoTag photoTag = new PhotoTag();
+            photoTag.setPhoto(photo);
+            photoTag.setTag(tag);
+            photoTagService.save(photoTag);
+            attributes.addFlashAttribute("message", "Hashtag adicionada com sucesso!");
+
+        } else {
+            attributes.addFlashAttribute("error", "Essa hashtag já está associada a esta foto.");
+        }
+
+        return "redirect:/photographers/" + id + "/photos/" + photoId;
+    }
+
+    @GetMapping("/search/tag")
+    @ResponseBody
+    public List<Tag> searchTags(@RequestParam String query) {
+        return tagService.searchByTagName(query); // Retorna a lista de tags encontradas
+    }
+
+
 }
+

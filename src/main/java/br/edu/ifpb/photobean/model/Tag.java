@@ -23,4 +23,5 @@ public class Tag {
 
     @OneToMany(mappedBy = "tag") // uma tag pode estar em várias fotos através de PhotoTag
     private Set<PhotoTag> photoTags;
+
 }
