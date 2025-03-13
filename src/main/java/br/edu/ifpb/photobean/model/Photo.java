@@ -37,7 +37,7 @@ public class Photo implements Serializable {
     public Set<Tag> getTags() {
         Set<Tag> tags = new HashSet<>();
         for (PhotoTag photoTag : photoTags) {
-            tags.add(photoTag.getTag());  // Assuming PhotoTag has a reference to Tag
+            tags.add(photoTag.getTag());
         }
         return tags;
     }

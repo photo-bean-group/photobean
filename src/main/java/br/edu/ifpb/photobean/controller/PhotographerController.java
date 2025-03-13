@@ -342,34 +342,51 @@ public class PhotographerController {
                                     @RequestParam String hashtag,
                                     Principal principal,
                                     RedirectAttributes attributes) {
-        // Recuperar o fotógrafo logado
-        Photographer photographer = photographerService.findByUsername(principal.getName());
 
-        // Recuperar a foto associada ao fotógrafo
+        Photographer photographer = photographerService.findByUsername(principal.getName());
         Photo photo = photoService.findById(photoId);
 
-        Tag tag = tagService.findByTagName(hashtag);
-        if (tag == null) {
-            tag = new Tag();
-            tag.setTagName(hashtag);
-            tag = tagService.save(tag);
+        if (photo == null || !photo.getPhotographer().equals(photographer)) {
+            attributes.addFlashAttribute("error", "Você não tem permissão para adicionar hashtags a essa foto.");
+            return "redirect:/photographers/" + id + "/photos"; // Redireciona para a página do fotógrafo
         }
 
-        PhotoTag photoTag = new PhotoTag();
-        photoTag.setPhoto(photo);
-        photoTag.setTag(tag);
-        photoTagService.save(photoTag);
+        // Buscar a tag exata pelo nome
+        Tag tag = tagService.findByTagName(hashtag);
 
-        attributes.addFlashAttribute("message", "Hashtag adicionada com sucesso!");
+        if (tag == null) {
+            System.out.println("Criando nova tag: " + hashtag);
+            tag = new Tag();
+            tag.setTagName(hashtag);
+            System.out.println("Nova tag salva1: " + tag.getTagName());
+            tag = tagService.save(tag);
+            System.out.println("Nova tag salva2: " + tag.getTagName());
+        }
+
+        // Verifica se a tag já está associada à foto
+        boolean tagAlreadyExists = photo.getTags().stream()
+                .anyMatch(existingTag -> existingTag.getTagName().equalsIgnoreCase(hashtag));
+
+        if (!tagAlreadyExists) {
+            PhotoTag photoTag = new PhotoTag();
+            photoTag.setPhoto(photo);
+            photoTag.setTag(tag);
+            photoTagService.save(photoTag);
+            attributes.addFlashAttribute("message", "Hashtag adicionada com sucesso!");
+
+        } else {
+            attributes.addFlashAttribute("error", "Essa hashtag já está associada a esta foto.");
+        }
 
         return "redirect:/photographers/" + id + "/photos/" + photoId;
     }
 
-    @GetMapping("/search/tags")
+    @GetMapping("/search/tag")
     @ResponseBody
     public List<Tag> searchTags(@RequestParam String query) {
-        return tagService.searchTags(query); // Chama o serviço que já implementa a lógica de busca
+        return tagService.searchByTagName(query); // Retorna a lista de tags encontradas
     }
+
 
 }
 

@@ -13,6 +13,6 @@ public interface TagRepository extends JpaRepository<Tag, Integer> {
 
     Tag findByTagName(String tagName);
 
-    @Query("SELECT t FROM Tag t WHERE LOWER(t.tagName) LIKE LOWER(CONCAT('%', :query, '%'))")
-    List<Tag> findByTagNameContainingIgnoreCase(@Param("query") String query);
+    @Query("SELECT t FROM Tag t WHERE t.tagName LIKE %:query%")
+    List<Tag> findByTagNameContaining(@Param("query") String query); // Busca tags pelo nome parcial
 }

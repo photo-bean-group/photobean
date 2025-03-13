@@ -21,9 +21,10 @@ public class TagService {
         return tagRepository.save(tag); // Salva a tag no banco
     }
 
-    public List<Tag> searchTags(String query) {
-        return tagRepository.findByTagNameContainingIgnoreCase(query); // Busca as tags com base no nome
+    public List<Tag> searchByTagName(String query) {
+        return tagRepository.findByTagNameContaining(query); // Busca por tags que contenham o termo de pesquisa
     }
+
 
 }
 
