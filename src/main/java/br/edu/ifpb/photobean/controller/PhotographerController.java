@@ -66,6 +66,8 @@ public class PhotographerController {
         modelAndView.addObject("followersCount", followersCount);
         modelAndView.addObject("followingCount", followingCount);
         return modelAndView;
+
+
     }
 
     @GetMapping("/{id}/photos")
@@ -73,9 +75,12 @@ public class PhotographerController {
         Photographer loggedPhotographer = photographerService.findByUsername(principal.getName());
         Photographer photographer = photographerService.findById(id);
 
+
+
         if (photographer == null) {
             throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
         }
+
 
         List<Photo> photos = photographer.getPhotos().stream()
                 .sorted(Comparator.comparing(Photo::getId).reversed())
@@ -188,28 +193,17 @@ public class PhotographerController {
 
 
     @GetMapping("/feed")
-    public String PhotographerListFeed(Model model) {
-        List<Photographer> photographerList = photographerService.findAll();
+    public String getFeed(Model model) {
+        List<Photo> feedPhotos = photographerService.findAll().stream()
+                .flatMap(photographer -> photographer.getPhotos().stream()) // Pegando todas as fotos
+                .sorted(Comparator.comparing(Photo::getId).reversed()) // Ordenando da mais recente para a mais antiga
+                .collect(Collectors.toList());
 
-        // Ordenando as fotos de cada fotógrafo
-        for (Photographer photographer : photographerList) {
-            // Convertendo o Set de fotos para List e ordenando
-            List<Photo> sortedPhotos = photographer.getPhotos().stream()
-                    .sorted(Comparator.comparing(Photo::getId).reversed())
-                    .collect(Collectors.toList());
+        model.addAttribute("feedPhotos", feedPhotos);
 
-            // Convertendo de volta para Set (não mantém a ordem)
-            Set<Photo> sortedPhotoSet = new HashSet<>(sortedPhotos);
-
-            // Atualizando o Set de fotos com as fotos ordenadas
-            photographer.setPhotos(sortedPhotoSet);
-        }
-        // Adicionando a lista de fotógrafos no modelo
-        model.addAttribute("photographers", photographerList);
-
-        // Retorna a página "feed" com os fotógrafos e suas fotos ordenadas
         return "photographers/feed";
     }
+
 
 
 

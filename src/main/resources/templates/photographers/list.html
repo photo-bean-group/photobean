@@ -19,6 +19,7 @@
         <tr th:each="photographer : ${photographer}">
             <td th:text="${photographer.name}">Nome</td>
             <td th:text="${photographer.email}">Email</td>
+
             <td th:text="${photographer.suspended ? 'Suspenso' : 'Ativo'}">Status</td>
             <td>
                 <!-- Link para detalhes -->
