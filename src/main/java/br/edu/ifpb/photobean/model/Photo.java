@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -19,13 +20,14 @@ public class Photo implements Serializable {
     private Integer id;
 
     private String imageUrl;
+    private LocalDateTime createdAt;
 
     @Lob
     @Column(name="imagemData", columnDefinition="blob")
     private byte[] imagemData;
 
     @ManyToOne  //uma foto está associada a um fotógrafo
-    @JoinColumn(name = "photographer_id")// chave estrangeira na tabela
+    @JoinColumn(name = "photographer_id", nullable = false)// chave estrangeira na tabela
     private Photographer photographer;
 
     @OneToMany(mappedBy = "photo")// uma foto tem vários comentários

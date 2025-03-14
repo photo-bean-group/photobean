@@ -20,6 +20,8 @@ public class PhotoService {
 
     @Autowired
     private PhotoRepository photoRepo;
+    @Autowired
+    private PhotoRepository photoRepository;
 
     private final String uploadDir = "src/main/resources/static/uploads/photos";
 
@@ -60,6 +62,9 @@ public class PhotoService {
                         photo.getPhotographer().getEmail()
                 ))
                 .collect(Collectors.toList());
+    }
+    public List<Photo> getFeedPhotos() {
+        return photoRepository.findAllOrderedByDate();
     }
 }
 
