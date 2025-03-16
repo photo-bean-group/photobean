@@ -166,19 +166,29 @@
                 </li>
             </ul>
 
-
-
-
         </div>
         <div class="mt-auto">
+
+
             <hr>
-            <form method="post" th:action="@{/photographers/{id}/photos/{photoId}/comments (id=${photographer.id}, photoId=${photo.id})}">
-                <div class="input-group">
-                    <input type="text" name="comment" class="form-control" placeholder="Adicione um comentário..." required>
-                    <button class="btn btn-success" type="submit">Enviar</button>
-                </div>
-            </form>
+            <!-- Só mostra o campo de comentário se o fotógrafo NÃO estiver suspenso -->
+            <div th:if="${!loggedPhotographer.suspendedFromCommenting}">
+                <form method="post" th:action="@{/photographers/{id}/photos/{photoId}/comments (id=${photographer.id}, photoId=${photo.id})}">
+                    <div class="input-group">
+                        <input type="text" name="comment" class="form-control" placeholder="Adicione um comentário..." required>
+                        <button class="btn btn-success" type="submit">Enviar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Mensagem para fotógrafos suspensos -->
+            <p th:if="${loggedPhotographer.suspendedFromCommenting}" class="text-danger">
+                Você está suspenso de comentar.
+            </p>
             <hr>
+
+
+
             <div class="d-flex align-items-center">
                 <form th:if="${!loggedPhotographer.suspended}" th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}" method="post">
                     <input type="hidden" name="photographerId" th:value="${loggedPhotographer.id}">

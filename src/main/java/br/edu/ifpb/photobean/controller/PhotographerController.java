@@ -70,6 +70,36 @@ public class PhotographerController {
 
     }
 
+    @GetMapping("/photographers/{id}/profile")
+    public ModelAndView getPhotographerProfile(@PathVariable Integer id, ModelAndView modelAndView, Principal principal) {
+        Photographer loggedPhotographer = photographerService.findByUsername(principal.getName());
+        Photographer photographer = photographerService.findById(id);
+
+        if (photographer == null) {
+            modelAndView.setViewName("error/404");
+            return modelAndView;
+        }
+
+        List<Photo> photos = photographer.getPhotos().stream()
+                .sorted(Comparator.comparing(Photo::getId).reversed())
+                .collect(Collectors.toList());
+
+        boolean isFollowing = followService.findByFollowerAndFollowee(loggedPhotographer, photographer) != null;
+        long followersCount = followService.countByFollowee(photographer);
+        long followingCount = followService.countByFollower(photographer);
+
+        modelAndView.setViewName("photographers/details");
+        modelAndView.addObject("photographer", photographer);
+        modelAndView.addObject("photos", photos);
+        modelAndView.addObject("isFollowing", isFollowing);
+        modelAndView.addObject("canFollow", !Objects.equals(loggedPhotographer.getId(), photographer.getId()));
+        modelAndView.addObject("followersCount", followersCount);
+        modelAndView.addObject("followingCount", followingCount);
+
+        return modelAndView;
+    }
+
+
     @GetMapping("/{id}/photos")
     public ModelAndView getPhotographer(@PathVariable Integer id, ModelAndView modelAndView, Principal principal) {
         Photographer loggedPhotographer = photographerService.findByUsername(principal.getName());
@@ -164,12 +194,19 @@ public class PhotographerController {
 
     @PostMapping("{id}/photos/{photoId}/comments")
     public String addComment(@PathVariable Integer id, @PathVariable Integer photoId,
-                             @RequestParam String comment, Principal principal) {
+                             @RequestParam String comment, Principal principal,  RedirectAttributes attributes) {
         Photographer photographer = photographerService.findByUsername(principal.getName());
 
         if (photographer == null) {
             throw new IllegalArgumentException("Fotógrafo não econtrado com o ID" + id);
         }
+
+        if (photographer.isSuspendedFromCommenting()) {
+            attributes.addFlashAttribute("error", "Você está suspenso de comentar.");
+            return "redirect:/photographers/" + id + "/photos/" + photoId;
+        }
+
+
 
         Photo photo = photoService.findById(photoId);
 
@@ -377,6 +414,28 @@ public class PhotographerController {
     @ResponseBody
     public List<Tag> searchTags(@RequestParam String query) {
         return tagService.searchByTagName(query); // Retorna a lista de tags encontradas
+    }
+
+    @PostMapping("/{id}/suspend-commenting")
+    public String suspendPhotographerFromCommenting(@PathVariable Integer id, RedirectAttributes attributes) {
+        try {
+            photographerService.suspendPhotographerFromCommenting(id);
+            attributes.addFlashAttribute("message", "Fotógrafo suspenso de comentar com sucesso!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            attributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/photographers/list";
+    }
+
+    @PostMapping("/{id}/allow-commenting")
+    public String allowPhotographerToComment(@PathVariable Integer id, RedirectAttributes attributes) {
+        try {
+            photographerService.allowPhotographerToComment(id);
+            attributes.addFlashAttribute("message", "Fotógrafo pode comentar novamente!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            attributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/photographers/list";
     }
 
 

@@ -15,7 +15,13 @@
       <div class="col-md-8 mb-4" th:each="photo : ${feedPhotos}">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title text-success text-center" th:text="${photo.photographer.name}">Nome do Fotógrafo</h5>
+            <!-- Link para o perfil do fotógrafo -->
+            <h5 class="card-title text-success text-center">
+              <a th:href="@{/photographers/{id}/photos (id=${photo.photographer.id})}" class="text-decoration-none text-success">
+              <span th:text="${photo.photographer.name}">Nome do Fotógrafo</span>
+              </a>
+            </h5>
+
             <p class="text-center">
               <span class="text-muted">Publicou uma nova foto.</span>
             </p>
