@@ -17,6 +17,9 @@ public class Photographer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Getter
+    @Setter
+    private boolean suspendedFromCommenting; // Suspensão apenas de comentários
 
     private String name;
 
@@ -39,4 +42,5 @@ public class Photographer {
     @OneToOne
     @JoinColumn(name = "username")
     private User user;
+
 }

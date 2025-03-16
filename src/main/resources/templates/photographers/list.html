@@ -19,26 +19,34 @@
         <tr th:each="photographer : ${photographer}">
             <td th:text="${photographer.name}">Nome</td>
             <td th:text="${photographer.email}">Email</td>
-
             <td th:text="${photographer.suspended ? 'Suspenso' : 'Ativo'}">Status</td>
             <td>
                 <!-- Link para detalhes -->
                 <a th:href="@{/photographers/{id}/photos (id=${photographer.id})}" class="btn btn-sm btn-primary">Detalhes</a>
 
-                <!-- Botão para suspender -->
+                <!-- Botão para suspender usuário -->
                 <form th:action="@{/photographers/{id}/suspend (id=${photographer.id})}" method="post" class="d-inline" th:if="${!photographer.suspended}">
                     <button type="submit" class="btn btn-sm btn-danger">Suspender</button>
                 </form>
 
-                <!-- Botão para reativar -->
+                <!-- Botão para reativar usuário -->
                 <form th:action="@{/photographers/{id}/reactivate (id=${photographer.id})}" method="post" class="d-inline" th:if="${photographer.suspended}">
                     <button type="submit" class="btn btn-sm btn-success">Reativar</button>
                 </form>
+
+                <!-- Botão para suspender apenas os comentários -->
+                <form th:action="@{/photographers/{id}/suspend-commenting (id=${photographer.id})}" method="post" class="d-inline" th:if="${!photographer.suspendedFromCommenting}">
+                    <button type="submit" class="btn btn-sm btn-warning">Suspender Comentários</button>
+                </form>
+
+                <!-- Botão para permitir comentários novamente -->
+                <form th:action="@{/photographers/{id}/allow-commenting (id=${photographer.id})}" method="post" class="d-inline" th:if="${photographer.suspendedFromCommenting}">
+                    <button type="submit" class="btn btn-sm btn-secondary">Permitir Comentários</button>
+                </form>
+
             </td>
         </tr>
         </tbody>
-
-
     </table>
 </div>
 </body>
