@@ -191,7 +191,7 @@
 
             <div class="d-flex align-items-center">
                 <form th:if="${!loggedPhotographer.suspended}" th:action="@{/photos/{photoId}/like-toggle(photoId=${photo.id})}" method="post">
-                    <input type="hidden" name="photographerId" th:value="${loggedPhotographer.id}">
+                    <input type="hidden" name="loggedPhotographerId" th:value="${loggedPhotographer.id}">
                     <button type="submit" class="btn p-0 border-0 bg-transparent" style="cursor: pointer;">
                         <i class="bi" style="font-size: 2rem;"
                            th:classappend="${photo.likes.contains(loggedPhotographer) ? 'bi-heart-fill text-danger' : 'bi-heart text-primary'}">

@@ -2,6 +2,9 @@ package br.edu.ifpb.photobean.config;
 
 import javax.sql.DataSource;
 
+import br.edu.ifpb.photobean.model.Photographer;
+import br.edu.ifpb.photobean.repository.PhotographerRepository;
+import br.edu.ifpb.photobean.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
@@ -63,6 +68,8 @@ public class PhotobeanSecurityConfig {
         if (!users.userExists(dev.getUsername())) {
             users.createUser(dev);
             users.createUser(admin);
+            createPhotographer(dev.getUsername());
+            createPhotographer(admin.getUsername());
         }
         return users;
     }
@@ -75,4 +82,21 @@ public class PhotobeanSecurityConfig {
         return provider;
     }
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PhotographerRepository photographerRepository;
+
+    private void createPhotographer(String username) {
+        Optional<br.edu.ifpb.photobean.model.User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            br.edu.ifpb.photobean.model.User user = userOptional.get();
+            Photographer photographer = new Photographer();
+            photographer.setUser(user);
+            photographer.setName(username);
+            photographer.setEmail(username + "@email.com");
+            photographerRepository.save(photographer);
+        }
+    }
 }

@@ -40,7 +40,7 @@ public class Photographer {
     private Set<Follow> followers;
 
     @OneToOne
-    @JoinColumn(name = "username")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
 }
